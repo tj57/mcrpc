@@ -11,6 +11,7 @@
 | [development/SDK_GUIDE.md](development/SDK_GUIDE.md) | Writing features |
 | [development/TESTING.md](development/TESTING.md) | Test suites |
 | [development/MIGRATION_MESHCORE.md](development/MIGRATION_MESHCORE.md) | MeshCore consumer guide |
+| [development/WORKSPACE.md](development/WORKSPACE.md) | `/data/projects` layout |
 | [development/MESHCORE_DEPENDENCIES.md](development/MESHCORE_DEPENDENCIES.md) | What stays in MeshCore |
 | [development/EXTRACTION.md](development/EXTRACTION.md) | Extraction record |
 | [development/RELEASE.md](development/RELEASE.md) | Release process |

@@ -1,53 +1,58 @@
 # Migrating MeshCore to standalone mcRPC
 
-## Before
+## Current workspace (recommended)
 
 ```
-MeshCore/lib/mcrpc/     # library sources lived here
-MeshCore/examples/mcrpc # adapter
+/data/projects/
+  mcrpc/                 # only protocol implementation
+  meshcore/              # consumer; examples/mcrpc adapter only
 ```
 
-## After
-
-```
-mcrpc/                     # this repository (standalone)
-MeshCore/lib/mcrpc ->      # dependency (submodule, symlink, or PlatformIO lib)
-MeshCore/examples/mcrpc    # thin adapter only (unchanged role)
-```
-
-## Recommended consumption
-
-### Option A — git submodule
-
-```bash
-cd MeshCore
-git submodule add https://github.com/mcrpc/mcrpc.git lib/mcrpc
-```
-
-### Option B — PlatformIO `lib_extra_dirs`
+PlatformIO (committed in mcRPC firmware envs):
 
 ```ini
-lib_extra_dirs = ../mcrpc
-lib_deps = mcrpc
+lib_deps =
+  …
+  file://../mcrpc
 ```
 
-### Option C — local symlink (development)
+No `meshcore/lib/mcrpc` sources. No symlinks.
+
+## Alternatives
+
+### Git submodule
 
 ```bash
-ln -sfn /path/to/mcrpc MeshCore/lib/mcrpc
+cd meshcore
+git submodule add <mcrpc-remote-url> lib/mcrpc
+# then lib_deps = mcrpc   (LDF finds lib/mcrpc)
+```
+
+### `lib_extra_dirs`
+
+```ini
+[platformio]
+lib_extra_dirs = ..
+# with lib_deps = mcrpc  → finds ../mcrpc/library.json
+```
+
+### Symlink (discouraged)
+
+Only if PlatformIO path refs are unavailable:
+
+```bash
+ln -sfn ../mcrpc lib/mcrpc
 ```
 
 ## Adapter checklist
 
-- [x] `#include <mcrpc/...>` (include root = library `include/`)
-- [x] `ConfigStore` for persistence (no `Config::begin(void*)`)
+- [x] `#include <mcrpc/...>`
+- [x] `ConfigStore` for persistence
 - [x] `HostServices` on the mesh class
 - [x] `PublishFn` → group text send
-- [x] No protocol parsing outside libmcrpc
+- [x] No protocol parsing outside `/data/projects/mcrpc`
 
-## Breaking notes for 1.0 extract
+## See also
 
-- Public headers moved to `include/mcrpc/` (PlatformIO `library.json` updated).
-- Removed `Config::begin(void*)`.
-- Removed empty `Registry` TU.
-- Protocol docs live in mcRPC; MeshCore keeps board/channel docs.
+- `/data/projects/README.md`
+- `doc/WORKSPACE.md` (in MeshCore)
