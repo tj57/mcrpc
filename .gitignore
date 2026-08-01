@@ -12,3 +12,8 @@ cmake-build-*/
 compile_commands.json
 CMakeCache.txt
 CMakeFiles/
+python/.venv/
+python/**/__pycache__/
+*.egg-info/
+.pytest_cache/
+

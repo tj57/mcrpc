@@ -16,4 +16,12 @@ B="$ROOT/build"
 "$B/mcrpc" discover tracker
 "$B/mcrpc" ping all
 python3 "$ROOT/scripts/test/check-doc-links.py"
+# Pure-Python protocol suite (same golden cases as C++)
+if [[ -x "$ROOT/python/.venv/bin/pytest" ]]; then
+  (cd "$ROOT/python" && .venv/bin/pytest -q)
+elif command -v pytest >/dev/null 2>&1; then
+  (cd "$ROOT/python" && PYTHONPATH=. pytest -q)
+else
+  echo "WARN: pytest not available — skip Python suite"
+fi
 echo "All tests OK"

@@ -1,27 +1,16 @@
-# Python bindings (design only — not implemented in 1.0)
+# Python bindings
 
-## Recommended approach
+**Implemented** as a pure-Python package under [`../../python/`](../../python/) that
+passes the same golden and compliance suites as the C++ reference.
 
-1. Build `libmcrpc` (+ future `libmcrpc_c`) via CMake.
-2. Expose a thin module `mcrpc` using `ctypes` or `cffi` against the C ABI.
-3. Pure-Python reimplementation is discouraged unless it runs the same golden tests.
-
-## Proposed surface
-
-```python
-class Request: ...
-def parse(line: str) -> Request: ...
-def strip_sender(text: str) -> str: ...
-def build_request(target: str, command: str, request_id: int | None = None, args: list[str] | None = None) -> str: ...
-def build_event(name: str, kv: str | None = None) -> str: ...
-PROTOCOL_VERSION: str
-SDK_VERSION: str
+```bash
+cd python
+python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
+.venv/bin/pytest
 ```
 
-## Home Assistant
+Home Assistant should depend on this package — do not reimplement the grammar
+inside meshcore-ha.
 
-HA custom component should call these helpers for channel text — see `doc/HA_INTEGRATION.md` in the MeshCore tree.
-
-## Status
-
-**Design only.**
+A future optional path may wrap `libmcrpc` via cffi; the public surface should
+remain the same.

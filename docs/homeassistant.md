@@ -1,37 +1,40 @@
-# Home Assistant integration (design)
+# Home Assistant integration
 
-Do **not** reimplement the grammar in Python. Link libmcrpc (via future C ABI)
-or run the same golden tests against a careful port.
+Use the **pure-Python** package in [`python/`](../python/) — do **not** reimplement
+the grammar inside meshcore-ha.
 
 ## Parse inbound
 
-1. Receive channel text from the MeshCore (or other) transport.
-2. `stripSenderPrefix`.
+1. Receive channel text from the MeshCore transport.
+2. `strip_sender_prefix`.
 3. Branch:
    - `event …` → fire HA event / trigger
    - `#id …` → correlate with outstanding request
-   - discover/status data → update device registry
-   - otherwise try `Parser::parse` if acting as a gateway
+   - discover/status data → structured parameters
+   - otherwise classify with `parse_response`
 
 ## Build commands
 
-Use `OutboundBuilder::request` / `requestWithArgs` only:
-
-```
-tracker#42 gps
-all discover
+```python
+from mcrpc import build_request
+build_request("tracker", "gps", request_id=42)
+# → "tracker#42 gps"
 ```
 
 ## Events
 
-`event <name> [k=v …]` — map name to entity platform.
+`event <name> [k=v …]` — map name to automations / future entity bridge.
 
 ## Request IDs
 
-Monotonic per HA instance; timeout outstanding commands.
+Use `RequestCorrelator` (monotonic IDs + timeout).
 
 ## Compliance reuse
 
-Ship or CI-run `tests/golden/cases` against the binding.
+```bash
+cd python && pytest
+```
 
-See also `examples/homeassistant/` for a C++ peer sketch.
+Golden cases live in `tests/golden/cases` (shared with C++).
+
+See MeshCore HA fork docs: `docs/MCRPC.md` (meshcore-ha `mcrpc` branch).
