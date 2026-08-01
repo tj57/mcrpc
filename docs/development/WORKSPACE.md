@@ -1,7 +1,5 @@
 # Development workspace notes (mcRPC)
 
-Canonical sibling layout:
-
 ```
 /data/projects/mcrpc      ← this repository
 /data/projects/meshcore   ← MeshCore consumer
@@ -10,7 +8,7 @@ Canonical sibling layout:
 MeshCore depends on this tree via PlatformIO:
 
 ```ini
-lib_deps = file://../mcrpc
+lib_deps = symlink://../mcrpc
 ```
 
 See `/data/projects/README.md` for the daily workflow.
