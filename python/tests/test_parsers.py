@@ -41,12 +41,20 @@ def test_discover() -> None:
 
 
 def test_gps() -> None:
-    g = parse_gps("gps lat=50.120000 lon=19.930000 alt=12.5 sat=18 hdop=1.2")
+    g = parse_gps(
+        "gps lat=50.120000 lon=19.930000 alt=12.5 sat=18 hdop=1.2 vdop=1.4 "
+        "speed=1.5 heading=10 provider=gnss mystery=1"
+    )
     assert g["latitude"] == 50.12
     assert g["longitude"] == 19.93
     assert g["altitude"] == 12.5
     assert g["satellites"] == 18
     assert g["accuracy"] == 1.2
+    assert g["vdop"] == 1.4
+    assert g["speed"] == 1.5
+    assert g["heading"] == 10
+    assert g["provider"] == "gnss"
+    assert g["extra"]["mystery"] == 1
 
 
 def test_gps_start_stop_future() -> None:
@@ -64,9 +72,11 @@ def test_battery() -> None:
     assert b["voltage"] == 3.85
     b = parse_battery("charging value=1")
     assert b["charging"] == 1
-    b = parse_battery("battery value=80 temp=24.1 health=good")
+    b = parse_battery("battery value=80 temp=24.1 health=good cycles=5 x=1")
     assert b["temperature"] == 24.1
     assert b["health"] == "good"
+    assert b["cycles"] == 5
+    assert b["extra"]["x"] == 1
 
 
 def test_event() -> None:
