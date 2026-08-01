@@ -1,0 +1,14 @@
+# discover / status builder smoke (MODE build_discover / build_status)
+IN
+-
+OUT
+tracker profile=tracker fw=test protocol=1.0 sdk=1.0.0
+MODE
+build_discover
+---
+IN
+-
+OUT
+status name=tracker profile=tracker fw=test
+MODE
+build_status

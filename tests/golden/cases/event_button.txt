@@ -1,0 +1,14 @@
+# event formatting (build only)
+IN
+button_pressed count=3
+OUT
+event button_pressed count=3
+MODE
+build_event
+---
+IN
+battery_low voltage=3.50
+OUT
+event battery_low voltage=3.50
+MODE
+build_event

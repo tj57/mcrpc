@@ -1,0 +1,2 @@
+add_executable(mcrpc_example_builder main.cpp)
+target_link_libraries(mcrpc_example_builder PRIVATE mcrpc)

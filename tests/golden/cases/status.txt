@@ -1,0 +1,6 @@
+IN
+-
+OUT
+status name=tracker profile=tracker fw=test
+MODE
+build_status

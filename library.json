@@ -1,0 +1,20 @@
+{
+  "name": "mcrpc",
+  "version": "1.0.0",
+  "description": "Transport-independent mcRPC protocol library and Feature SDK",
+  "keywords": ["mesh", "rpc", "protocol", "iot", "homeassistant"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mcrpc/mcrpc.git"
+  },
+  "authors": [{ "name": "mcRPC contributors" }],
+  "license": "MIT",
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": "mcrpc/mcrpc.h",
+  "build": {
+    "includeDir": "include",
+    "srcDir": "src",
+    "srcFilter": ["+<*>", "-<.git/>", "-<tests/>", "-<examples/>", "-<tools/>"]
+  }
+}

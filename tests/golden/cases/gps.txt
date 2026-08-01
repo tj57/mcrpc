@@ -1,0 +1,14 @@
+# outbound request builder
+IN
+tracker gps
+OUT
+tracker gps
+MODE
+build_request
+---
+IN
+tracker#42 status
+OUT
+tracker#42 status
+MODE
+build_request

@@ -1,0 +1,13 @@
+# unknown command
+IN
+tracker nosuch
+OUT
+err unknown_command
+---
+# not addressed — expect no reply (OUT -)
+IN
+other ping
+OUT
+-
+MODE
+ignore

@@ -1,0 +1,20 @@
+# ping — connectivity
+IN
+tracker ping
+OUT
+pong
+---
+IN
+tracker#18 ping
+OUT
+#18 pong
+---
+IN
+all ping
+OUT
+pong
+---
+IN
+  tracker   ping  
+OUT
+pong
