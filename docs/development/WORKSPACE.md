@@ -1,14 +1,13 @@
-# Development workspace notes (mcRPC)
+# Development workspace
 
 ```
 /data/projects/mcrpc      ← this repository
 /data/projects/meshcore   ← MeshCore consumer
 ```
 
-MeshCore depends on this tree via PlatformIO:
+| Mode | MeshCore `lib_deps` |
+|------|---------------------|
+| Development | `symlink://../mcrpc` via `platformio.local.ini` |
+| Release | `https://github.com/…/mcrpc.git#vX.Y.Z` in committed `[mcrpc_lib]` |
 
-```ini
-lib_deps = symlink://../mcrpc
-```
-
-See `/data/projects/README.md` for the daily workflow.
+See `/data/projects/README.md` and `/data/projects/docker/README.md`.
