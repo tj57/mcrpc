@@ -86,13 +86,25 @@ class RequestCorrelator:
         return any(p.raw_request == body for p in self._pending.values())
 
     def classify_inbound(
-        self, raw_message: str
+        self, raw_message: str, *, consume: bool = True
     ) -> tuple[str, ParsedResponse | None, ParsedEvent | None, PendingRequest | None]:
-        """Return ``(kind, response, event, pending)`` where kind is response|event|other."""
+        """Return ``(kind, response, event, pending)`` where kind is response|event|other.
+
+        When the pending request is a broadcast (``meta["broadcast"]``), the pending
+        entry is peeked (not consumed) so multiple replies can share one request_id.
+        Pass ``consume=False`` to never remove pending.
+        """
         body = strip_sender_prefix(raw_message)
         event = parse_event(body)
         if event is not None:
             return "event", None, event, None
         resp = parse_response(body)
-        pending = self.take(resp.request_id) if resp.request_id is not None else None
+        if resp.request_id is None:
+            return "response", resp, None, None
+        pending = self.peek(resp.request_id)
+        if pending is None:
+            return "response", resp, None, None
+        is_broadcast = bool(pending.meta.get("broadcast"))
+        if consume and not is_broadcast:
+            pending = self.take(resp.request_id)
         return "response", resp, None, pending
