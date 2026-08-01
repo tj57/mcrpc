@@ -1,6 +1,6 @@
 # Migrating MeshCore to standalone mcRPC
 
-## Current workspace (recommended)
+## Workspace
 
 ```
 /data/projects/
@@ -8,40 +8,14 @@
   meshcore/              # consumer; examples/mcrpc adapter only
 ```
 
-PlatformIO (committed):
+## Dependency modes
 
-```ini
-[platformio]
-lib_extra_dirs = ..
+| Mode | Configuration |
+|------|----------------|
+| Development | `meshcore/platformio.local.ini` (gitignored) sets `[mcrpc_lib] lib = symlink://../mcrpc` |
+| Release / CI | committed `[mcrpc_lib] lib = https://github.com/…/mcrpc.git#vX.Y.Z` |
+| Future | `mcrpc @ ^1.0.0` on PlatformIO Registry |
 
-; in mcRPC firmware envs:
-lib_deps =
-  …
-  mcrpc
-```
+Firmware envs reference `${mcrpc_lib.lib}` only — no duplicated `platformio.ini` trees.
 
-No `meshcore/lib/mcrpc` sources. No symlinks. Library is used **in place**.
-
-## Alternatives
-
-### `file://../mcrpc`
-
-Copies into `.pio/libdeps` — works, but stale until reinstall. Prefer `lib_extra_dirs`.
-
-### Git submodule
-
-```bash
-cd meshcore
-git submodule add <mcrpc-remote-url> lib/mcrpc
-```
-
-### Symlink (discouraged)
-
-```bash
-ln -sfn ../mcrpc lib/mcrpc
-```
-
-## See also
-
-- `/data/projects/README.md`
-- `doc/WORKSPACE.md` (MeshCore)
+See `/data/projects/README.md` and `meshcore/doc/MCRPC_DEPENDENCY.md`.
