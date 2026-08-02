@@ -39,8 +39,8 @@ int main() {
   rpc.handleIncomingText("desktop ping");
   if (std::strcmp(g_last, "pong") != 0) return 1;
 
-  std::printf(">> all discover\n");
-  rpc.handleIncomingText("all discover");
+  std::printf(">> all discovery\n");
+  rpc.handleIncomingText("all discovery");
   if (!std::strstr(g_last, "protocol=")) return 1;
 
   rpc.shutdown();

@@ -123,6 +123,9 @@ ParseResult Parser::parse(const char* input, Request& out) {
   for (char* c = out.command; *c; ++c) {
     if (*c >= 'A' && *c <= 'Z') *c = (char)(*c - 'A' + 'a');
   }
+  if (strcmp(out.command, "discover") == 0) {
+    copyToken(out.command, sizeof(out.command), "discovery", 9);
+  }
 
   out.argc = 0;
   while (out.argc < MCRPC_MAX_ARGS) {

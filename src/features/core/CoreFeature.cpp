@@ -10,7 +10,8 @@ void CoreFeature::registerCommands(CommandRegistry& commands) {
   g_core = this;
   commands.registerCommand("ping", &CoreFeature::cmdPing, "connectivity test");
   commands.registerCommand("status", &CoreFeature::cmdStatus, "node status");
-  commands.registerCommand("discover", &CoreFeature::cmdDiscover, "discovery info");
+  commands.registerCommand("discovery", &CoreFeature::cmdDiscover, "discovery info");
+  commands.registerCommand("discover", &CoreFeature::cmdDiscover, "alias for discovery");
   commands.registerCommand("help", &CoreFeature::cmdHelp, "list commands");
   commands.registerCommand("caps", &CoreFeature::cmdCaps, "list capabilities");
 }
@@ -40,7 +41,7 @@ bool CoreFeature::cmdDiscover(CommandContext& ctx) {
 bool CoreFeature::cmdHelp(CommandContext& ctx) {
   if (!g_core || !g_core->_host.engine) {
     ctx.reply->clear();
-    ctx.reply->append("ping status discover help caps");
+    ctx.reply->append("ping status discovery help caps");
     return true;
   }
   g_core->_host.engine->buildHelp(*ctx.reply);

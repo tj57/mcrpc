@@ -118,6 +118,8 @@ def parse(input_text: str | None) -> tuple[ParseResult, Request]:
     if cmd is None:
         return ParseResult.MissingCommand, out
     out.command = cmd.lower()
+    if out.command == "discover":
+        out.command = "discovery"
 
     while True:
         arg, i = _read_token(s, i, ident_only=False)

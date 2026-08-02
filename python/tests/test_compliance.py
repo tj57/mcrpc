@@ -34,6 +34,15 @@ def test_request_ids() -> None:
     assert r == ParseResult.Ok and req.has_request_id and req.request_id == 99
 
 
+def test_discover_alias_normalizes_to_discovery() -> None:
+    r, req = parse("all discover")
+    assert r == ParseResult.Ok
+    assert req.command == "discovery"
+    r, req = parse("all discovery")
+    assert r == ParseResult.Ok
+    assert req.command == "discovery"
+
+
 def test_addressing() -> None:
     r, req = parse("all ping")
     assert req.address_kind == AddressKind.All

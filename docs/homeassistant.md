@@ -10,7 +10,7 @@ the grammar inside meshcore-ha.
 3. Branch:
    - `event …` → fire HA event / trigger
    - `#id …` → correlate with outstanding request
-   - discover/status data → structured parameters
+   - discovery/status data → structured parameters
    - otherwise classify with `parse_response`
 
 ## Build commands

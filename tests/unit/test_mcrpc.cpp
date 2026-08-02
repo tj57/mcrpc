@@ -76,7 +76,9 @@ static void test_parser_request_ids() {
 
 static void test_parser_addressing() {
   Request r;
-  EXPECT(Parser::parse("all discover", r) == ParseResult::Ok);
+  EXPECT(Parser::parse("all discovery", r) == ParseResult::Ok);
+  EXPECT(Parser::parse("all discover", r) == ParseResult::Ok);  // backward-compatible alias
+  EXPECT(std::strcmp(r.command, "discovery") == 0);
   EXPECT(r.address_kind == AddressKind::All);
 
   EXPECT(Parser::parse("self reboot", r) == ParseResult::Ok);

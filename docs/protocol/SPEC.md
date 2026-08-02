@@ -179,7 +179,7 @@ Every mcRPC device MUST implement:
 ```
 ping
 status
-discover
+discovery
 help
 caps
 ```
@@ -190,7 +190,7 @@ Meaning
 |----------|-------------|
 | ping | Connectivity test |
 | status | Current state |
-| discover | Basic information |
+| discovery | Basic information |
 | help | Supported commands |
 | caps | Supported capabilities |
 
@@ -342,8 +342,10 @@ Profiles define additional commands.
 
 # 12. Discovery
 
+`discover` remains a required backward-compatible alias for `discovery`.
+
 ```
-all discover
+all discovery
 ```
 
 ↓
@@ -501,7 +503,7 @@ err
 
 status
 
-discover
+discovery
 
 caps
 
@@ -536,7 +538,7 @@ Known command / capability that is not available on this device
 err unsupported
 ```
 
-Unknown fields in status/discover/events
+Unknown fields in status/discovery/events
 
 ↓
 
@@ -555,7 +557,7 @@ Recommended
 ```
 status
 
-discover
+discovery
 
 caps
 
@@ -641,7 +643,7 @@ tracker#18 gps lat=50.12 lon=19.93 acc=4 sat=18
 ```
 
 ```
-all discover
+all discovery
 
 ↓
 
