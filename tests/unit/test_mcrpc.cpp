@@ -41,6 +41,12 @@ static bool hEcho(CommandContext& ctx) {
   return true;
 }
 
+static bool hUnsupported(CommandContext& ctx) {
+  ctx.reply->clear();
+  ctx.reply->append("err unsupported");
+  return true;
+}
+
 /* -------------------- Parser -------------------- */
 
 static void test_parser_basics() {
@@ -174,6 +180,10 @@ static void test_dispatcher() {
 
   EXPECT(d.dispatch("tracker unknown", reply) == true);
   EXPECT(std::strstr(reply.data, "unknown_command") != nullptr);
+
+  reg.registerCommand("relay", hUnsupported);
+  EXPECT(d.dispatch("tracker relay", reply) == true);
+  EXPECT(std::strstr(reply.data, "unsupported") != nullptr);
 
   EXPECT(d.dispatch("tracker", reply) == false);
   EXPECT(d.dispatch("", reply) == false);

@@ -46,9 +46,10 @@ bool Dispatcher::dispatch(const char* line, ReplyBuffer& reply) {
   ParseResult pr = Parser::parse(line, req);
   if (pr == ParseResult::Empty) return false;
   if (pr != ParseResult::Ok) {
-    // Malformed packets addressed potentially to us — still ignore silently
-    // unless we can identify the target. Spec: unknown → err unsupported only
-    // for well-formed unknown commands.
+    // Malformed / incomplete lines: ignore silently (no wire reply).
+    // Spec §18: well-formed unknown *commands* → err unknown_command;
+    // registered commands whose feature is unavailable → err unsupported
+    // (returned by the feature handler, not here).
     return false;
   }
 

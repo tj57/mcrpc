@@ -1,0 +1,11 @@
+# Unsupported feature (registered handler, capability unavailable)
+IN
+tracker relay
+OUT
+err unsupported
+---
+# Unknown command (no handler)
+IN
+tracker nosuchcmd
+OUT
+err unknown_command

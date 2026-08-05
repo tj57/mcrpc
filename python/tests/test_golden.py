@@ -64,6 +64,7 @@ def _make_dispatcher() -> Dispatcher:
     d.set_node_name("tracker")
     d.set_group_name("mych")
     d.register("ping", lambda req: "pong")
+    d.register("relay", lambda req: "err unsupported")
     return d
 
 

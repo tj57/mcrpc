@@ -24,6 +24,12 @@ static bool hPing(CommandContext& ctx) {
   return true;
 }
 
+static bool hUnsupported(CommandContext& ctx) {
+  ctx.reply->clear();
+  ctx.reply->append("err unsupported");
+  return true;
+}
+
 struct Case {
   std::string in;
   std::string out;
@@ -177,6 +183,8 @@ static void runCase(const char* file, const Case& c, Dispatcher& disp) {
 int main() {
   CommandRegistry reg;
   reg.registerCommand("ping", hPing);
+  // Registered feature that is unavailable on this device (SPEC §18).
+  reg.registerCommand("relay", hUnsupported);
   Dispatcher disp(reg);
   disp.setNodeName("tracker");
   disp.setGroupName("mych");
