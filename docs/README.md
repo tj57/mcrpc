@@ -14,6 +14,8 @@
 | [development/WORKSPACE.md](development/WORKSPACE.md) | `/data/projects` layout |
 | [development/MESHCORE_DEPENDENCIES.md](development/MESHCORE_DEPENDENCIES.md) | What stays in MeshCore |
 | [development/EXTRACTION.md](development/EXTRACTION.md) | Extraction record |
+| [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) | Mandatory git / config / QA / release rules |
+| [protocol/COMMAND_COVERAGE.md](protocol/COMMAND_COVERAGE.md) | RC command + stress coverage |
 | [development/RELEASE.md](development/RELEASE.md) | Release process |
 | [homeassistant.md](homeassistant.md) | HA integration design |
 | [roadmap/ROADMAP.md](roadmap/ROADMAP.md) | Future plans |

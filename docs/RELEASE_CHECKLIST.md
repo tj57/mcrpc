@@ -1,4 +1,15 @@
-# Release checklist — mcRPC 1.0.0
+# Release checklist — mcRPC
+
+**`./scripts/release-check` must PASS** before tag, GitHub Release, or publication.
+
+Author: **tj57** only. Never add `Co-authored-by: Cursor`.
+
+Public channel is **out of scope** for mcRPC QA. Stress uses the paced
+methodology in meshcore-ha `docs/STRESS_METHODOLOGY.md` (not a 100-ping burst).
+
+---
+
+## Historical — mcRPC 1.0.0 first publish
 
 Use this before tagging `v1.0.0` or opening the GitHub repository to the public.
 

@@ -99,6 +99,8 @@ PlatformIO: add this repository as a library (`lib_deps` / `lib_extra_dirs`). Se
 | [Home Assistant](docs/homeassistant.md) | Integration design |
 | [Roadmap](docs/roadmap/ROADMAP.md) | 1.1 / 2.0 |
 | [Release checklist](docs/RELEASE_CHECKLIST.md) | Publish gate |
+| [Development rules](docs/DEVELOPMENT_RULES.md) | Git / QA / release (mandatory) |
+| [Command coverage](docs/protocol/COMMAND_COVERAGE.md) | RC coverage + stress |
 | [Project state](docs/STATE.md) | Maturity and debt |
 
 ## Project layout
