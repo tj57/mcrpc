@@ -65,6 +65,8 @@ def _make_dispatcher() -> Dispatcher:
     d.set_group_name("mych")
     d.register("ping", lambda req: "pong")
     d.register("relay", lambda req: "err unsupported")
+    d.register("battery", lambda req: "err unsupported")
+    d.register("gps", lambda req: "err unsupported")
     return d
 
 

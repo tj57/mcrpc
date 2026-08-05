@@ -4,6 +4,17 @@ tracker relay
 OUT
 err unsupported
 ---
+# Known optional command with no hardware on this node
+IN
+tracker battery
+OUT
+err unsupported
+---
+IN
+tracker gps
+OUT
+err unsupported
+---
 # Unknown command (no handler)
 IN
 tracker nosuchcmd

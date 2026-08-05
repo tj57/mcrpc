@@ -71,6 +71,8 @@ def test_dispatch_errors_broadcast() -> None:
     d.register("ping", lambda req: "pong")
     d.register("status", lambda req: "status name=n profile=p fw=f uptime=1 rssi=0")
     d.register("relay", lambda req: "err unsupported")
+    d.register("battery", lambda req: "err unsupported")
+    d.register("gps", lambda req: "err unsupported")
     d.set_node_name("tracker")
     d.set_group_name("mych")
 
@@ -78,6 +80,8 @@ def test_dispatch_errors_broadcast() -> None:
     assert d.dispatch("other ping") is None
     assert d.dispatch("tracker nope") == "err unknown_command"
     assert d.dispatch("tracker relay") == "err unsupported"
+    assert d.dispatch("tracker battery") == "err unsupported"
+    assert d.dispatch("tracker gps") == "err unsupported"
     assert d.dispatch("tracker#3 ping") == "#3 pong"
     assert d.dispatch("group:mych ping") == "pong"
     assert d.dispatch("group:x ping") is None

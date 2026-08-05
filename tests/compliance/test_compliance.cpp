@@ -85,6 +85,8 @@ static void test_dispatch_errors_broadcast() {
   reg.registerCommand("ping", hPing);
   reg.registerCommand("status", hStatus);
   reg.registerCommand("relay", hUnsupported);
+  reg.registerCommand("battery", hUnsupported);
+  reg.registerCommand("gps", hUnsupported);
   Dispatcher d(reg);
   d.setNodeName("tracker");
   d.setGroupName("mych");
@@ -101,6 +103,11 @@ static void test_dispatch_errors_broadcast() {
   EXPECT(d.dispatch("tracker relay", reply) == true);
   EXPECT(std::strstr(reply.data, "unsupported") != nullptr);
   EXPECT(std::strstr(reply.data, "unknown_command") == nullptr);
+
+  EXPECT(d.dispatch("tracker battery", reply) == true);
+  EXPECT(std::strstr(reply.data, "unsupported") != nullptr);
+  EXPECT(d.dispatch("tracker gps", reply) == true);
+  EXPECT(std::strstr(reply.data, "unsupported") != nullptr);
 
   EXPECT(d.dispatch("tracker#3 ping", reply) == true);
   EXPECT(std::strcmp(reply.data, "#3 pong") == 0);

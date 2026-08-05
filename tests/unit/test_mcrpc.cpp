@@ -182,7 +182,13 @@ static void test_dispatcher() {
   EXPECT(std::strstr(reply.data, "unknown_command") != nullptr);
 
   reg.registerCommand("relay", hUnsupported);
+  reg.registerCommand("battery", hUnsupported);
+  reg.registerCommand("gps", hUnsupported);
   EXPECT(d.dispatch("tracker relay", reply) == true);
+  EXPECT(std::strstr(reply.data, "unsupported") != nullptr);
+  EXPECT(d.dispatch("tracker battery", reply) == true);
+  EXPECT(std::strstr(reply.data, "unsupported") != nullptr);
+  EXPECT(d.dispatch("tracker gps", reply) == true);
   EXPECT(std::strstr(reply.data, "unsupported") != nullptr);
 
   EXPECT(d.dispatch("tracker", reply) == false);

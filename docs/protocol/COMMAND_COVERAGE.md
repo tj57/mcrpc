@@ -4,39 +4,42 @@ Status legend: ✓ present · △ partial · — absent · n/a not applicable
 
 ## Core (mandatory) commands
 
-| Command | Parser | Dispatcher | Unit | Golden | Compliance | Chat E2E (HA) |
-|---------|--------|------------|------|--------|------------|---------------|
-| `ping` | ✓ | ✓ CoreFeature | ✓ | ✓ `ping.txt` | ✓ | ✓ |
-| `status` | ✓ | ✓ CoreFeature | ✓ | ✓ `status.txt` | ✓ | ✓ (HA answer) |
-| `discovery` / `discover` | ✓ alias | ✓ CoreFeature | ✓ | ✓ `discover.txt` | ✓ | ✓ (HA answer) |
-| `help` | ✓ | ✓ CoreFeature | ✓ | △ via compliance | ✓ | ✓ (HA answer) |
-| `caps` | ✓ | ✓ CoreFeature | ✓ | △ via compliance | ✓ | ✓ (HA answer) |
+| Command | Parser | Dispatcher | Unit | Golden | Compliance | Python | HA | Chat E2E |
+|---------|--------|------------|------|--------|------------|--------|-----|----------|
+| `ping` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `status` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `discovery` / `discover` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| `help` | ✓ | ✓ | ✓ | △ | ✓ | ✓ | ✓ | ✓ |
+| `caps` | ✓ | ✓ | ✓ | △ | ✓ | ✓ | ✓ | ✓ |
 
-## Error contract
+## Error contract (SPEC §18)
 
-| Case | Wire reply | Unit | Golden | Compliance | Chat E2E |
-|------|------------|------|--------|------------|----------|
-| Unknown command | `err unknown_command` | ✓ | ✓ `errors.txt` | ✓ | ✓ HA bridge |
-| Unsupported feature | `err unsupported` | ✓ RelayFeature / handlers | ✓ `unsupported.txt` | ✓ | n/a (HA stub has no unsupported features) |
-| Not addressed | *(no reply)* | ✓ | ✓ `errors.txt` MODE ignore | ✓ | ✓ policy deny |
+| Case | Wire | Unit | Golden | Compliance | Python | HA | Chat E2E |
+|------|------|------|--------|------------|--------|-----|----------|
+| Unknown verb | `err unknown_command` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Known, unavailable (`relay` / `battery` / `gps`) | `err unsupported` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Not addressed | *(no reply)* | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Public while `listen=[mcCtrl]` | *(absolute silence)* | n/a | n/a | n/a | n/a | ✓ | ✓ |
 
-## Optional feature commands (reference firmware)
+## Optional feature commands
 
-| Command | Parser | Dispatcher | Unit | Golden | Compliance | Chat E2E |
-|---------|--------|------------|------|--------|------------|----------|
-| `gps` / `location` / `track` | ✓ | ✓ GpsFeature | ✓ | ✓ `gps.txt` | △ | — |
-| `battery` / `voltage` / `charging` | ✓ | ✓ BatteryFeature | △ | — | — | — |
-| `button` / `button_state` | ✓ | ✓ ButtonFeature | △ | ✓ `event_button.txt` | — | — |
-| `relay` / `toggle` / `power` | ✓ | ✓ → `err unsupported` | ✓ | ✓ `unsupported.txt` | ✓ | — |
-| `display` / `text` / `clear` | ✓ | ✓ DisplayFeature | — | — | — | — |
-| `led` | ✓ header | not linked in default lib | — | — | — | — |
+| Command | Parser | Dispatcher | Unit | Golden | Compliance | Python | HA | Chat |
+|---------|--------|------------|------|--------|------------|--------|-----|------|
+| `battery` / `voltage` / `charging` | ✓ | ✓ → unsupported if no host | ✓ | ✓ unsupported | ✓ | ✓ | ✓ unsupported | ✓ |
+| `gps` / `location` / `track` | ✓ | ✓ (gps_no_fix / unsupported / busy) | ✓ | ✓ unsupported stub | ✓ | ✓ | ✓ unsupported | ✓ |
+| `relay` / `toggle` / `power` | ✓ | ✓ always unsupported stub | ✓ | ✓ | ✓ | ✓ | ✓ | — |
 
-## Spec-only optional commands (no handler → `unknown_command`)
+## Stress / TX coverage
 
-`get`, `set`, `reboot`, `ota`, `reset`, `beep`, `temp`, … — intentionally unanswered as features until implemented; contract is `err unknown_command`.
+| Scenario | Covered by |
+|----------|------------|
+| Companion `NOT_FOUND` vs `TABLE_FULL` | firmware + HA `tx_pipeline` classification |
+| Reply queue under radio busy | `McRpcMesh` queue + counters |
+| Airtime / pool limits | `doc/MCRPC_STRESS_TX_ANALYSIS.md` |
+| Burst Chat on mcCtrl | Manual QA + diagnostics download |
 
-## Gaps closed in this RC
+## Gaps closed this RC
 
-1. HA bridge answered unknown commands with `err unsupported` → fixed to `unknown_command`.
-2. Golden/compliance coverage for `err unsupported` (RelayFeature) added.
-3. Chat E2E asserts unknown-command answer body.
+1. HA returned `unknown_command` for `battery`/`gps` → **`unsupported`**.
+2. Public traffic still entered parse/trace when `listen=[1]` → **early absolute ignore**.
+3. Coverage matrix includes HA / Chat / Stress columns.
