@@ -1,6 +1,6 @@
 {
   "name": "mcrpc",
-  "version": "1.1.0-beta",
+  "version": "1.1.0-beta.2",
   "description": "Transport-independent mcRPC protocol library and Feature SDK",
   "keywords": ["mesh", "rpc", "protocol", "iot", "homeassistant"],
   "repository": {

@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 This project uses independent **protocol**, **SDK**, and **library** versions
 (see `include/mcrpc/Version.h`).
 
+## [1.1.0-beta.2] — 2026-08-06
+
+RFC-0001 QA fix train (editorial RFC status; discover `features=` CSV tokens).
+
+### Changed
+
+- Library **1.1.0-beta.2**
+- Python discover parser exposes `feature_tokens` / `protocol_min` / `protocol_max`
+- RFC-0001 header: Accepted rev 03 (implementation beta train)
+
 ## [1.1.0-beta] — 2026-08-06
 
 RFC-0001 Phase 1 beta (architecture frozen — additive only).
