@@ -19,6 +19,7 @@
 | [DEFINITION_OF_DONE.md](DEFINITION_OF_DONE.md) | Phase DoD + release train |
 | [rfc/RFC-0001-mcrpc-1.1.md](rfc/RFC-0001-mcrpc-1.1.md) | Draft: identity / caps / metadata (architecture frozen) |
 | [rfc/IMPLEMENTATION_PLAN-RFC-0001.md](rfc/IMPLEMENTATION_PLAN-RFC-0001.md) | Phased implementation plan |
+| [rfc/ANDROID_PHASE4.md](rfc/ANDROID_PHASE4.md) | Android Phase 4 contract (no app tree here) |
 | [development/RELEASE.md](development/RELEASE.md) | Release process |
 | [homeassistant.md](homeassistant.md) | HA integration design |
 | [roadmap/ROADMAP.md](roadmap/ROADMAP.md) | Future plans |
