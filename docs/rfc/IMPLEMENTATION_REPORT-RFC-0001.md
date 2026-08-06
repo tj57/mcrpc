@@ -4,18 +4,18 @@
 |-------|--------|
 | RFC | RFC-0001 rev **03** (Accepted, architecture frozen) |
 | Report date | 2026-08-06 |
-| Train | **beta.2** |
+| Train | **GA 1.1.0** (from beta.2 QA sign-off) |
 
-## Beta train tips
+## GA train tips
 
 | Component | Tag | Notes |
 |-----------|-----|--------|
-| mcrpc | `v1.1.0-beta.2` | Protocol/SDK 1.1; library 1.1.0-beta.2 |
-| MeshCore | `mcrpc-1.1.0-beta.2` | Pins mcrpc `#v1.1.0-beta.2` |
-| meshcore-ha | `v2.11.0-beta.2` | HACS tip; does not move `v2.10.1` stable |
+| mcrpc | `v1.1.0` | Protocol/SDK 1.1; library 1.1.0 |
+| MeshCore | `mcrpc-1.1.0` | Pins mcrpc `#v1.1.0` |
+| meshcore-ha | `v2.11.0` | HACS Latest (replaces prior Latest packaging tip) |
 | Android | — | Phase 4 **specification only** (`ANDROID_PHASE4.md`) |
 
-Previous QA tips (immutable, not moved): `v1.1.0-beta`, `mcrpc-1.1.0-beta`, `v2.11.0-beta`.
+Previous immutable betas: `v1.1.0-beta`, `v1.1.0-beta.2`, `mcrpc-1.1.0-beta*`, `v2.11.0-beta*`.
 
 ## Identity ID source (meshcore-ha)
 

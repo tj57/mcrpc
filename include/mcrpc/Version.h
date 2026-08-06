@@ -5,7 +5,7 @@
  * @brief Independent versioning for protocol, SDK API, and package release.
  *
  * Protocol 1.1 (RFC-0001): additive @id addressing + discovery metadata.
- * Library 1.1.0-beta.2: RFC-0001 QA fix train (HA @id / discovery alignment).
+ * Library 1.1.0: RFC-0001 GA (protocol 1.1).
  */
 
 namespace mcrpc {
@@ -43,7 +43,7 @@ namespace mcrpc {
 #define MCRPC_LIBRARY_VERSION_PATCH 0
 #endif
 #ifndef MCRPC_LIBRARY_VERSION_STRING
-#define MCRPC_LIBRARY_VERSION_STRING "1.1.0-beta.2"
+#define MCRPC_LIBRARY_VERSION_STRING "1.1.0"
 #endif
 
 inline constexpr int protocolVersionCode() {

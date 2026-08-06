@@ -54,6 +54,30 @@ void Config::setChannelPskAscii(const char* psk16) {
   memcpy(_prefs.channel_psk, psk16, n);
 }
 
+static int hexNibble(char c) {
+  if (c >= '0' && c <= '9') return c - '0';
+  if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+  if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+  return -1;
+}
+
+bool Config::setChannelPskHex(const char* psk_hex32) {
+  memset(_prefs.channel_psk, 0, sizeof(_prefs.channel_psk));
+  if (!psk_hex32) return false;
+  size_t n = strlen(psk_hex32);
+  if (n != 32) return false;
+  for (size_t i = 0; i < 16; i++) {
+    int hi = hexNibble(psk_hex32[i * 2]);
+    int lo = hexNibble(psk_hex32[i * 2 + 1]);
+    if (hi < 0 || lo < 0) {
+      memset(_prefs.channel_psk, 0, sizeof(_prefs.channel_psk));
+      return false;
+    }
+    _prefs.channel_psk[i] = (uint8_t)((hi << 4) | lo);
+  }
+  return true;
+}
+
 void Config::setListenEnabled(bool on) {
   _prefs.listen_enabled = on ? 1 : 0;
 }

@@ -21,6 +21,9 @@ public:
   void contributeDiscover(DiscoverBuilder& discover) override;
 
   void notifyPressed();
+  /** Edge events for hold detection (host polls MomentaryButton::isPressed). */
+  void notifyDown();
+  void notifyUp();
   bool lastState() const { return _pressed; }
 
 private:

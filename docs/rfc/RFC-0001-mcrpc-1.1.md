@@ -5,11 +5,11 @@
 | **RFC** | 0001 |
 | **Title** | mcRPC 1.1 — identity addressing and capability metadata |
 | **Status** | **Accepted** — Revision **03** (architecture frozen) |
-| **Protocol today** | **1.1** (beta train) — 1.0 remains the stable wire floor |
+| **Protocol today** | **1.1** (GA) — 1.0 remains the stable wire floor |
 | **Target** | Protocol **1.1** (additive where practical) |
 | **Created** | 2026-08-06 |
 | **Revised** | 2026-08-06 (rev 03 — encoding rules; product-neutral examples) |
-| **Implements** | Beta train: mcrpc `1.1.0-beta.2`, MeshCore `mcrpc-1.1.0-beta.2`, meshcore-ha `2.11.0-beta.2` (Android Phase 4 = specification only) |
+| **Implements** | GA: mcrpc `1.1.0`, MeshCore `mcrpc-1.1.0`, meshcore-ha `2.11.0` (Android Phase 4 = specification only) |
 
 All examples in this document are **generic**. They do not describe any
 particular deployment, product branding, or operator node names.

@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 This project uses independent **protocol**, **SDK**, and **library** versions
 (see `include/mcrpc/Version.h`).
 
+## [1.1.0] — 2026-08-06
+
+RFC-0001 GA (protocol **1.1**). Architecture frozen at rev 03.
+
+### Highlights
+
+- Identity addressing: name / `@id` / `all` (no role/tag RF addresses)
+- Discovery 1.1: `id=`, `tag=`, `uptime=`, `protocol_min`/`protocol_max`, canonical `caps=`/`features=`
+- Library **1.1.0**, SDK **1.1.0**, protocol **1.1**
+
 ## [1.1.0-beta.2] — 2026-08-06
 
 RFC-0001 QA fix train (editorial RFC status; discover `features=` CSV tokens).

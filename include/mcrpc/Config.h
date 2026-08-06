@@ -64,6 +64,8 @@ public:
   void setNodeName(const char* name);
   void setChannelName(const char* name);
   void setChannelPskAscii(const char* psk16);
+  /** 32 hex chars → 16 raw bytes (MeshCore companion / HA channel secret form). */
+  bool setChannelPskHex(const char* psk_hex32);
   void setListenEnabled(bool on);
 
   /** Attach store and load (or save defaults if missing). */

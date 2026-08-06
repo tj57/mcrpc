@@ -33,6 +33,19 @@ void ButtonFeature::notifyPressed() {
   _pressed = false;
 }
 
+void ButtonFeature::notifyDown() {
+  _pressed = true;
+  publishEvent("button_down", nullptr);
+}
+
+void ButtonFeature::notifyUp() {
+  _pressed = false;
+  _press_count++;
+  char kv[40];
+  snprintf(kv, sizeof(kv), "count=%lu", (unsigned long)_press_count);
+  publishEvent("button_up", kv);
+}
+
 bool ButtonFeature::cmdButton(CommandContext& ctx) {
   if (!g_btn) return false;
   ctx.reply->clear();
