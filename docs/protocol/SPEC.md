@@ -721,12 +721,31 @@ HA is a peer that joins the same channel (companion app, MQTT bridge, etc.). The
 
 # 23. Proposed protocol improvements (not implemented)
 
-Documented for discussion — **not silently applied**:
+Documented for discussion — **not silently applied** beyond what RFC-0001
+ships in library betas:
 
 | Idea | Benefit | Cost | Status |
 |------|---------|------|--------|
+| Identity / `@id` / `all`; caps + metadata; `tag=` | Clear fleet model | Spec + client UX | **RFC-0001** — implementing (Phase 1+) |
 | Emit bare mcRPC without MeshCore `Sender:` prefix | Cleaner lines | Breaks chat UX in companion apps | deferred |
 | Multi-channel listen list | Gateways | More flash + config | deferred |
 | `err unsupported` vs `unknown_command` | Spec clarified in §15/§18; dispatcher uses `unknown_command` | — | closed |
 | Binary TLV companion codec | Efficiency | Violates "human readable" goal | rejected |
+| Glob / multi-target addressing | Fleet ops | Grammar break risk | deferred to v2 (see RFC-0001) |
+
+---
+
+# 24. Protocol 1.1 additives (RFC-0001)
+
+Normative summary — full text in `docs/rfc/RFC-0001-mcrpc-1.1.md`.
+
+**Addressing:** `name` | `@hex` | `all` (plus legacy `self` / `group:`).
+Capabilities and UI tags are **not** addresses. Request id remains `name#digits`.
+
+**Discovery:** devices SHOULD advertise full `id=`, canonical `caps=` /
+`features=`, `uptime=`, prefer `tag=` (legacy `profile=` allowed).
+
+**CSV:** lowercase, unique, alphabetically sorted, no spaces.
+
+Clients MUST ignore unknown fields (unchanged).
 

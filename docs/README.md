@@ -14,8 +14,11 @@
 | [development/WORKSPACE.md](development/WORKSPACE.md) | `/data/projects` layout |
 | [development/MESHCORE_DEPENDENCIES.md](development/MESHCORE_DEPENDENCIES.md) | What stays in MeshCore |
 | [development/EXTRACTION.md](development/EXTRACTION.md) | Extraction record |
-| [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) | Mandatory git / config / QA / release rules |
 | [protocol/COMMAND_COVERAGE.md](protocol/COMMAND_COVERAGE.md) | RC command + stress coverage |
+| [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) | Mandatory git / config / QA / release rules |
+| [DEFINITION_OF_DONE.md](DEFINITION_OF_DONE.md) | Phase DoD + release train |
+| [rfc/RFC-0001-mcrpc-1.1.md](rfc/RFC-0001-mcrpc-1.1.md) | Draft: identity / caps / metadata (architecture frozen) |
+| [rfc/IMPLEMENTATION_PLAN-RFC-0001.md](rfc/IMPLEMENTATION_PLAN-RFC-0001.md) | Phased implementation plan |
 | [development/RELEASE.md](development/RELEASE.md) | Release process |
 | [homeassistant.md](homeassistant.md) | HA integration design |
 | [roadmap/ROADMAP.md](roadmap/ROADMAP.md) | Future plans |

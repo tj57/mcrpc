@@ -34,7 +34,21 @@ def test_request_ids() -> None:
     assert r == ParseResult.Ok and req.has_request_id and req.request_id == 99
 
 
-def test_discover_alias_normalizes_to_discovery() -> None:
+def test_at_id_addressing() -> None:
+    r, req = parse("@3CBBF74E ping")
+    assert r == ParseResult.Ok
+    assert req.address_kind == AddressKind.Id
+    assert req.target.lower() == "3cbbf74e"
+    r, req = parse("#A31C ping")
+    assert r != ParseResult.Ok
+
+    d = Dispatcher()
+    d.set_node_name("node1")
+    d.set_node_id("3CBBF74E")
+    d.register("ping", lambda _req: "pong")
+    assert d.dispatch("@3CBB ping") == "pong"
+    assert d.dispatch("@DEAD ping") is None
+
     r, req = parse("all discover")
     assert r == ParseResult.Ok
     assert req.command == "discovery"
@@ -101,8 +115,8 @@ def test_builders_and_events() -> None:
     d.add("protocol", PROTOCOL_VERSION)
     d.add("sdk", SDK_VERSION)
     disc = d.write()
-    assert "protocol=1.0" in disc
-    assert "sdk=1.0.0" in disc
+    assert "protocol=1.1" in disc
+    assert "sdk=1.1.0" in disc
 
     assert build_event("button_pressed", "count=1") == "event button_pressed count=1"
     assert build_error("timeout") == "err timeout"

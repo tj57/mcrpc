@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 This project uses independent **protocol**, **SDK**, and **library** versions
 (see `include/mcrpc/Version.h`).
 
+## [1.1.0-beta] — 2026-08-06
+
+RFC-0001 Phase 1 beta (architecture frozen — additive only).
+
+### Protocol (1.1)
+
+- Identity addressing via `@` + hex (`AddressKind::Id`); `#` + digits remains request-id only
+- Discovery metadata: full `id=`, `tag=`, `uptime=`, `protocol_min` / `protocol_max`, `features=`, `caps=` CSV
+- Canonical CSV rules for `caps=` / `features=` (lowercase, unique, sorted)
+- Legacy `profile=` still emitted for compatibility; prefer `tag=`
+
+### SDK / Library
+
+- SDK **1.1.0**, library **1.1.0-beta**
+- `Dispatcher::setNodeId`, `McRpc::setNodeId` / `setTag`
+- `CanonicalCsv.h` helpers
+
+### Docs
+
+- RFC-0001 rev 03, implementation plan, Definition of Done, release train
+
 ## [1.0.0] — 2026-08-01
 
 First public release of standalone **mcRPC**.

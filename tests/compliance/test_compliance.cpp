@@ -133,8 +133,8 @@ static void test_builders_and_events() {
   d.add("protocol", protocolVersionString());
   d.add("sdk", sdkVersionString());
   d.writeTo(r);
-  EXPECT(std::strstr(r.data, "protocol=1.0") != nullptr);
-  EXPECT(std::strstr(r.data, "sdk=1.0.0") != nullptr);
+  EXPECT(std::strstr(r.data, "protocol=1.1") != nullptr);
+  EXPECT(std::strstr(r.data, "sdk=1.1.0") != nullptr);
 
   OutboundBuilder::event(r, "button_pressed", "count=1");
   EXPECT(std::strcmp(r.data, "event button_pressed count=1") == 0);
@@ -210,14 +210,14 @@ static void test_framework_discover_versions() {
   rpc.buildDiscover(d);
   ReplyBuffer r;
   d.writeTo(r);
-  EXPECT(std::strstr(r.data, "protocol=1.0") != nullptr);
-  EXPECT(std::strstr(r.data, "sdk=1.0.0") != nullptr);
+  EXPECT(std::strstr(r.data, "protocol=1.1") != nullptr);
+  EXPECT(std::strstr(r.data, "sdk=1.1.0") != nullptr);
   rpc.shutdown();
 }
 
 int main() {
-  EXPECT(std::strcmp(protocolVersionString(), "1.0") == 0);
-  EXPECT(std::strcmp(sdkVersionString(), "1.0.0") == 0);
+  EXPECT(std::strcmp(protocolVersionString(), "1.1") == 0);
+  EXPECT(std::strcmp(sdkVersionString(), "1.1.0") == 0);
 
   test_whitespace();
   test_request_ids();

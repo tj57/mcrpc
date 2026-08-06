@@ -6,6 +6,10 @@ Standalone library, stable protocol and SDK, compliance + golden suites, CLI, do
 
 ## 1.1
 
+- Protocol evolution (additive): see
+  [`RFC-0001`](../rfc/RFC-0001-mcrpc-1.1.md) +
+  [`implementation plan`](../rfc/IMPLEMENTATION_PLAN-RFC-0001.md) —
+  architecture frozen; **not coded until plan execution**
 - Thin **C ABI** (`bindings/c`) for FFI
 - Python ctypes/cffi wrapper (parse/build)
 - Optional CMake target `mcrpc_core` without reference feature objects

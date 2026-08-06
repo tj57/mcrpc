@@ -6,7 +6,7 @@
 namespace mcrpc {
 
 #ifndef MCRPC_MAX_DISCOVER_FIELDS
-#define MCRPC_MAX_DISCOVER_FIELDS 16
+#define MCRPC_MAX_DISCOVER_FIELDS 24
 #endif
 
 /**

@@ -1,4 +1,5 @@
 #include <mcrpc/Parser.h>
+#include <mcrpc/CanonicalCsv.h>
 
 #include <ctype.h>
 #include <stdlib.h>
@@ -12,6 +13,11 @@ static void skipSpaces(const char*& p) {
 static bool isIdentChar(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
          (c >= '0' && c <= '9') || c == '_' || c == '-';
+}
+
+static bool isHexChar(char c) {
+  if (c >= 'A' && c <= 'Z') c = (char)(c - 'A' + 'a');
+  return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
 }
 
 static bool readToken(const char*& p, char* dest, size_t dest_size, bool ident_only) {
@@ -32,8 +38,6 @@ const char* Parser::stripSenderPrefix(const char* text) {
   if (text == nullptr) return "";
   const char* colon = strchr(text, ':');
   if (colon == nullptr) return text;
-  // Chat-style prefixes look like "Name: payload" (whitespace required after ':').
-  // Do NOT treat protocol tokens such as "group:sensors" as sender prefixes.
   const char* p = text;
   while (p < colon) {
     if (*p == ' ' || *p == '\t') return text;
@@ -51,15 +55,21 @@ ParseResult Parser::parse(const char* input, Request& out) {
 
   const char* p = input;
   skipSpaces(p);
-  // trim trailing whitespace (work on a local view)
   while (*p == '\r' || *p == '\n') ++p;
   if (*p == 0) return ParseResult::Empty;
 
-  // target (may be group:name)
   skipSpaces(p);
   if (*p == 0) return ParseResult::MissingTarget;
 
-  if (strncmp(p, "group:", 6) == 0 || strncmp(p, "GROUP:", 6) == 0) {
+  // RFC-0001: @hex identity — '#' + digits remains request-id only
+  if (*p == '@') {
+    ++p;
+    const char* start = p;
+    while (isHexChar(*p)) ++p;
+    if (p == start) return ParseResult::Malformed;
+    copyToken(out.target, sizeof(out.target), start, (size_t)(p - start));
+    out.address_kind = AddressKind::Id;
+  } else if (strncmp(p, "group:", 6) == 0 || strncmp(p, "GROUP:", 6) == 0) {
     out.address_kind = AddressKind::Group;
     p += 6;
     if (!readToken(p, out.target, sizeof(out.target), true)) {
@@ -78,10 +88,6 @@ ParseResult Parser::parse(const char* input, Request& out) {
     }
   }
 
-  // optional #request_id glued to target OR as separate token after target
-  // Spec: target [request] SP command  where request = "#" 1*DIGIT
-  // In human typing this appears as "ha#42 ping" (no space) which we already
-  // partially handled if # is part of the token — re-parse.
   {
     char* hash = strchr(out.target, '#');
     if (hash != nullptr && hash[1] != 0) {
@@ -100,7 +106,6 @@ ParseResult Parser::parse(const char* input, Request& out) {
     }
   }
 
-  // Also accept "ha #42 ping"
   skipSpaces(p);
   if (*p == '#') {
     ++p;
@@ -111,6 +116,7 @@ ParseResult Parser::parse(const char* input, Request& out) {
     }
     idbuf[i] = 0;
     if (i == 0) return ParseResult::Malformed;
+    // Digits-only request id. If non-digit hex follows without digits, malformed.
     out.has_request_id = true;
     out.request_id = (uint32_t)strtoul(idbuf, nullptr, 10);
   }
@@ -119,7 +125,6 @@ ParseResult Parser::parse(const char* input, Request& out) {
     return ParseResult::MissingCommand;
   }
 
-  // lowercase command for registry lookup convenience (store lower)
   for (char* c = out.command; *c; ++c) {
     if (*c >= 'A' && *c <= 'Z') *c = (char)(*c - 'A' + 'a');
   }

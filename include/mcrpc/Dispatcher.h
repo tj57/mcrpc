@@ -15,6 +15,8 @@ public:
   explicit Dispatcher(CommandRegistry& registry) : _registry(registry) {}
 
   void setNodeName(const char* name) { _node_name = name ? name : ""; }
+  /** Full hex node id (no '@'). Used for AddressKind::Id matching. */
+  void setNodeId(const char* id) { _node_id = id ? id : ""; }
   void setGroupName(const char* name) { _group_name = name ? name : ""; }
   void setUserData(void* user) { _user = user; }
 
@@ -35,6 +37,7 @@ private:
 
   CommandRegistry& _registry;
   const char* _node_name = "";
+  const char* _node_id = "";
   const char* _group_name = "";
   void* _user = nullptr;
 };

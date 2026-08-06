@@ -96,6 +96,24 @@ static void test_parser_addressing() {
 
   EXPECT(Parser::parse("GROUP:sensors ping", r) == ParseResult::Ok);
   EXPECT(r.address_kind == AddressKind::Group);
+
+  EXPECT(Parser::parse("@3CBBF74E ping", r) == ParseResult::Ok);
+  EXPECT(r.address_kind == AddressKind::Id);
+  EXPECT(std::strcmp(r.target, "3CBBF74E") == 0);
+
+  EXPECT(Parser::parse("@3cbb status", r) == ParseResult::Ok);
+  EXPECT(r.address_kind == AddressKind::Id);
+
+  EXPECT(Parser::parse("@3CBB#9 ping", r) == ParseResult::Ok);
+  EXPECT(r.address_kind == AddressKind::Id);
+  EXPECT(r.has_request_id);
+  EXPECT(r.request_id == 9);
+}
+
+static void test_parser_id_not_hash_target() {
+  Request r;
+  // '#' + hex is NOT a node id (RFC-0001)
+  EXPECT(Parser::parse("#A31C ping", r) != ParseResult::Ok);
 }
 
 static void test_parser_case_and_args() {
@@ -193,6 +211,12 @@ static void test_dispatcher() {
 
   EXPECT(d.dispatch("tracker", reply) == false);
   EXPECT(d.dispatch("", reply) == false);
+
+  d.setNodeId("3CBBF74E");
+  EXPECT(d.dispatch("@3CBBF74E ping", reply) == true);
+  EXPECT(std::strcmp(reply.data, "pong") == 0);
+  EXPECT(d.dispatch("@3CBB ping", reply) == true);  // unique prefix
+  EXPECT(d.dispatch("@DEAD ping", reply) == false);
 }
 
 /* -------------------- Builders -------------------- */
@@ -391,6 +415,7 @@ int main() {
   test_parser_basics();
   test_parser_request_ids();
   test_parser_addressing();
+  test_parser_id_not_hash_target();
   test_parser_case_and_args();
   test_parser_malformed();
   test_parser_sender_prefix();

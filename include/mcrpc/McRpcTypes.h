@@ -52,6 +52,7 @@ enum class AddressKind : uint8_t {
   All,
   Self,
   Group,
+  Id,  // "@" + hex identity (RFC-0001)
 };
 
 /** Parsed inbound request (fixed-size, no heap). */

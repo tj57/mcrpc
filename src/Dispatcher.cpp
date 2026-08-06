@@ -1,4 +1,5 @@
 #include <mcrpc/Dispatcher.h>
+#include <mcrpc/CanonicalCsv.h>
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -23,6 +24,10 @@ bool Dispatcher::isAddressedToUs(const Request& req) const {
       return true;
     case AddressKind::Group:
       return _group_name[0] != 0 && ieq(req.target, _group_name);
+    case AddressKind::Id:
+      if (_node_id[0] == 0) return false;
+      // Full match or unique prefix (single local id ⇒ any matching prefix OK)
+      return ieq(req.target, _node_id) || hexIdPrefixMatch(_node_id, req.target);
     case AddressKind::Named:
     default:
       return _node_name[0] != 0 && ieq(req.target, _node_name);

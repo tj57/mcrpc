@@ -2,7 +2,7 @@
 IN
 -
 OUT
-tracker profile=tracker fw=test protocol=1.0 sdk=1.0.0
+tracker profile=tracker fw=test protocol=1.1 sdk=1.1.0
 MODE
 build_discover
 ---
