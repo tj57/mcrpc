@@ -22,6 +22,6 @@ jobs:
       - name: Version smoke
         run: |
           ./build/mcrpc version | tee /tmp/ver.txt
-          grep -q 'library=1.2.3' /tmp/ver.txt
-          grep -q 'sdk=1.2.3' /tmp/ver.txt
+          grep -q 'library=1.2.4' /tmp/ver.txt
+          grep -q 'sdk=1.2.4' /tmp/ver.txt
           grep -q 'protocol=1.2' /tmp/ver.txt

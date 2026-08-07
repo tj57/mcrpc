@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 This project uses independent **protocol**, **SDK**, and **library** versions
 (see `include/mcrpc/Version.h`).
 
+## [1.2.4] — 2026-08-07
+
+### SDK / Library
+
+- SDK **1.2.4**, library **1.2.4**
+- `RequestCorrelator`: known request lines (`call … entity=`, `all ping`, …) classify as ``other``, not ``Data``
+- Fixes peer→HA inbound ``call`` with kv args never producing ``#N ok`` / bus event
+
 ## [1.2.3] — 2026-08-07
 
 Wider broadcast stagger so half-duplex peers stop sharing RF slots.

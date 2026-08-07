@@ -121,3 +121,24 @@ def test_reply_jitter_rfc0002():
         broadcast=True, identity="3cbbf74e", entropy=0, companion_bias=True
     )
     assert with_bias >= (BROADCAST_MIN_MS + 1200) / 1000.0
+
+
+def test_call_with_entity_is_request_not_data_response():
+    """Regression: ``name#id call proc entity=…`` must not be ResponseKind.Data path."""
+    from mcrpc.client import RequestCorrelator
+    from mcrpc.response import parse_response, ResponseKind
+
+    line = "mcYogi#1 call switch.turn_on entity=switch.mcrpc_lab"
+    # parse_response alone still sees Data (generic kv) — correlator must override
+    assert parse_response(line).kind == ResponseKind.Data
+    assert RequestCorrelator.looks_like_request(line) is True
+    kind, resp, evt, pending = RequestCorrelator().classify_inbound(line)
+    assert kind == "other"
+    assert resp is None and evt is None and pending is None
+
+    kind2, resp2, _, _ = RequestCorrelator().classify_inbound("#1 ok")
+    assert kind2 == "response"
+    assert resp2 is not None and resp2.kind == ResponseKind.Ok
+
+    kind3, _, _, _ = RequestCorrelator().classify_inbound("all ping")
+    assert kind3 == "other"

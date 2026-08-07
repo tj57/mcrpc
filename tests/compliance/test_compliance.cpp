@@ -279,7 +279,7 @@ static void test_framework_discover_versions() {
 
 int main() {
   EXPECT(std::strcmp(protocolVersionString(), "1.2") == 0);
-  EXPECT(std::strcmp(sdkVersionString(), "1.2.3") == 0);
+  EXPECT(std::strcmp(sdkVersionString(), "1.2.4") == 0);
 
   test_whitespace();
   test_request_ids();
