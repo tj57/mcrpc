@@ -19,6 +19,7 @@
 | [DEFINITION_OF_DONE.md](DEFINITION_OF_DONE.md) | Phase DoD + release train |
 | [rfc/RFC-0001-mcrpc-1.1.md](rfc/RFC-0001-mcrpc-1.1.md) | Identity / caps (1.1; addressing still in force) |
 | [rfc/RFC-0002-mcrpc-1.2-slim-call.md](rfc/RFC-0002-mcrpc-1.2-slim-call.md) | Slim discovery, rich status, namespaced call |
+| [QA_1_2.md](QA_1_2.md) | QA checklist for protocol 1.2 |
 | [rfc/IMPLEMENTATION_PLAN-RFC-0001.md](rfc/IMPLEMENTATION_PLAN-RFC-0001.md) | Phased implementation plan (1.1) |
 | [rfc/ANDROID_PHASE4.md](rfc/ANDROID_PHASE4.md) | Android Phase 4 contract (no app tree here) |
 | [development/RELEASE.md](development/RELEASE.md) | Release process |
