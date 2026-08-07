@@ -84,3 +84,11 @@ def test_event() -> None:
     assert e is not None
     assert e.name == "gps_fix"
     assert e.parameters["lat"] == 1
+
+
+def test_format_uptime_and_short_id8():
+    from mcrpc import format_uptime, short_id8
+    assert format_uptime(9209) == "2h33m"
+    assert format_uptime(45) == "45s"
+    assert short_id8("AABBCCDDEEFF0011") == "aabbccdd"
+    assert short_id8(None) == ""

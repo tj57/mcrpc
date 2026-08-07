@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 This project uses independent **protocol**, **SDK**, and **library** versions
 (see `include/mcrpc/Version.h`).
 
+## [1.2.1] — 2026-08-07
+
+Patch: expose Python `format_uptime` / `short_id8` (parity with C++ `UptimeFormat` / short id).
+
+### SDK / Library
+
+- SDK **1.2.1**, library **1.2.1**
+- Protocol wire remains **1.2**
+
 ## [1.2.0] — 2026-08-07
 
 RFC-0002 (protocol **1.2**): slim discovery, rich status, namespaced `call`.

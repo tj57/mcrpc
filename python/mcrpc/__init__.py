@@ -17,6 +17,7 @@ from .parser import parse, strip_sender_prefix
 from .request import AddressKind, ParseResult, Request
 from .response import ParsedResponse, ResponseKind, parse_caps_blob, parse_response
 from .status import ParsedStatus, StatusBuilder, parse_status
+from .uptime import format_uptime, short_id8
 from .version import (
     LIBRARY_VERSION,
     PROTOCOL_VERSION,
@@ -277,4 +278,6 @@ __all__ = [
     "build_call_busy",
     "build_call_retry",
     "parse_call_result",
+    "format_uptime",
+    "short_id8",
 ]

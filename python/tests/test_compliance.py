@@ -143,7 +143,7 @@ def test_builders_and_events() -> None:
     disc = d.write()
     assert "v=1.2" in disc
     assert PROTOCOL_VERSION == "1.2"
-    assert SDK_VERSION == "1.2.0"
+    assert SDK_VERSION == "1.2.1"
 
     parsed = parse_discover(
         "button id=3cbbf74e tag=ha fw=2.11.0 v=1.2 up=1h33m caps=battery,button extra=1"
