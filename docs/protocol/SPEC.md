@@ -712,8 +712,8 @@ After sender-prefix strip, consumers see `#18 gps lat=…`, which preserves corr
 
 ### Broadcast reply stagger (RFC-0002 §8)
 
-Replies to `all …` MUST be TX-delayed (`ReplyJitter`, typically 250–1750 ms with
-a per-node slot) so half-duplex peers can RX each other. MeshCore transports
+Replies to `all …` MUST be TX-delayed (`ReplyJitter`, typically 400–3600 ms with
+16 identity slots). Companion hosts MAY add an extra listen bias. Transports
 SHOULD pass `delay_ms` into `sendFlood(pkt, delay_ms)`. Events stay immediate.
 
 ## Listening scope

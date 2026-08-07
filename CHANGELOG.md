@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 This project uses independent **protocol**, **SDK**, and **library** versions
 (see `include/mcrpc/Version.h`).
 
+## [1.2.3] — 2026-08-07
+
+Wider broadcast stagger so half-duplex peers stop sharing RF slots.
+
+### Protocol
+
+- Recommended `ReplyJitter` window: **400–3600 ms**, **16 slots**
+- Slot seed SHOULD be discovery `id=` (first 8 hex) when identity is pubkey hex
+
+### SDK / Library
+
+- SDK **1.2.3**, library **1.2.3**
+- Python `delay_seconds(..., companion_bias=, local_tx_settle=)` for companion hosts
+- Wire `v=` remains **1.2**
+
 ## [1.2.2] — 2026-08-07
 
 RFC-0002 §8: broadcast reply stagger + library `ReplyJitter` / PublishEx.

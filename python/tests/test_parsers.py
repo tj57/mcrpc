@@ -102,6 +102,8 @@ def test_reply_jitter_rfc0002():
         needs_broadcast_stagger,
         identity_hash,
     )
+    from mcrpc.reply_jitter import SLOT_COUNT, delay_seconds as reply_delay_seconds, slot_seed
+
     assert needs_broadcast_stagger(address_kind="All")
     assert not needs_broadcast_stagger(address_kind="Named", target="ha")
     d0 = reply_delay_ms(broadcast=True, identity="aabbccdd", entropy=0)
@@ -110,3 +112,12 @@ def test_reply_jitter_rfc0002():
     assert BROADCAST_MIN_MS <= d1 <= BROADCAST_MAX_MS
     assert identity_hash("button") != identity_hash("ha-peer")
     assert reply_delay_ms(broadcast=False, identity="x", entropy=50) <= 120
+    # Short discovery ids used by HA + Heltec lab pair must not share a slot
+    s_ha = slot_seed("3cbbf74e" + "aa" * 28)
+    s_ht = slot_seed("3b1d7b85" + "bb" * 28)
+    assert s_ha == "3cbbf74e" and s_ht == "3b1d7b85"
+    assert (identity_hash(s_ha) % SLOT_COUNT) != (identity_hash(s_ht) % SLOT_COUNT)
+    with_bias = reply_delay_seconds(
+        broadcast=True, identity="3cbbf74e", entropy=0, companion_bias=True
+    )
+    assert with_bias >= (BROADCAST_MIN_MS + 1200) / 1000.0

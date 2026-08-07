@@ -147,7 +147,7 @@ receivers during transition.
 | Axis | 1.2 value |
 |------|-----------|
 | Wire `v=` | `1.2` |
-| SDK / library (informative) | `1.2.2` |
+| SDK / library (informative) | `1.2.3` |
 
 Legacy `protocol=` / `sdk=` in discovery are obsolete for new emitters; readers
 MAY still parse them from transitional peers.
@@ -209,16 +209,20 @@ answered may miss the others.
 ### 8.2 Recommended algorithm (library `ReplyJitter`)
 
 ```text
-BROADCAST_MIN_MS = 250
-BROADCAST_MAX_MS = 1750
-SLOT_COUNT       = 8
-slot             = FNV-1a32(identity) % SLOT_COUNT
+BROADCAST_MIN_MS = 400
+BROADCAST_MAX_MS = 3600
+SLOT_COUNT       = 16
+seed             = first 8 hex of identity when identity is pubkey hex, else identity
+slot             = FNV-1a32(seed) % SLOT_COUNT
 slot_w           = (BROADCAST_MAX_MS - BROADCAST_MIN_MS) / SLOT_COUNT
 delay_ms         = BROADCAST_MIN_MS + slot * slot_w + random(0, slot_w)
 ```
 
-`identity` SHOULD be the node’s full hex id when known, else the stable node
-name. Transports apply `delay_ms` (sleep, `sendFlood(pkt, delay_ms)`, …).
+`identity` SHOULD be the node’s pubkey hex (slot uses discovery-style 8-hex `id=`),
+else the stable node name. Companion hosts that also TX the request (e.g. HA Chat)
+MAY add a listen bias after the slot delay so they RX peer answers before their own TX.
+
+Transports apply `delay_ms` (sleep, `sendFlood(pkt, delay_ms)`, …).
 
 Reference: `include/mcrpc/ReplyJitter.h`, Python `mcrpc.reply_jitter`.
 
