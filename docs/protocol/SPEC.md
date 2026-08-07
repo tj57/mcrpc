@@ -710,6 +710,12 @@ tracker: #18 gps lat=50.12 lon=19.93
 
 After sender-prefix strip, consumers see `#18 gps lat=…`, which preserves correlation.
 
+### Broadcast reply stagger (RFC-0002 §8)
+
+Replies to `all …` MUST be TX-delayed (`ReplyJitter`, typically 250–1750 ms with
+a per-node slot) so half-duplex peers can RX each other. MeshCore transports
+SHOULD pass `delay_ms` into `sendFlood(pkt, delay_ms)`. Events stay immediate.
+
 ## Listening scope
 
 Firmware decrypts only the configured channel (via `searchChannelsByHash`). Other channels are ignored.

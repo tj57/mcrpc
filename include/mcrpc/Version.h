@@ -4,8 +4,8 @@
  * @file Version.h
  * @brief Independent versioning for protocol, SDK API, and package release.
  *
- * Protocol 1.2 (RFC-0002): slim discovery, rich status, namespaced call.
- * Library 1.2.1: RFC-0002 + Python uptime/id helpers.
+ * Protocol 1.2 (RFC-0002): slim discovery, rich status, namespaced call, reply stagger.
+ * Library 1.2.2: ReplyJitter + PublishEx delayed publish.
  */
 
 namespace mcrpc {
@@ -27,10 +27,10 @@ namespace mcrpc {
 #define MCRPC_SDK_VERSION_MINOR 2
 #endif
 #ifndef MCRPC_SDK_VERSION_PATCH
-#define MCRPC_SDK_VERSION_PATCH 1
+#define MCRPC_SDK_VERSION_PATCH 2
 #endif
 #ifndef MCRPC_SDK_VERSION_STRING
-#define MCRPC_SDK_VERSION_STRING "1.2.1"
+#define MCRPC_SDK_VERSION_STRING "1.2.2"
 #endif
 
 #ifndef MCRPC_LIBRARY_VERSION_MAJOR
@@ -40,10 +40,10 @@ namespace mcrpc {
 #define MCRPC_LIBRARY_VERSION_MINOR 2
 #endif
 #ifndef MCRPC_LIBRARY_VERSION_PATCH
-#define MCRPC_LIBRARY_VERSION_PATCH 1
+#define MCRPC_LIBRARY_VERSION_PATCH 2
 #endif
 #ifndef MCRPC_LIBRARY_VERSION_STRING
-#define MCRPC_LIBRARY_VERSION_STRING "1.2.1"
+#define MCRPC_LIBRARY_VERSION_STRING "1.2.2"
 #endif
 
 inline constexpr int protocolVersionCode() {

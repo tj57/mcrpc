@@ -10,10 +10,21 @@
 #include <mcrpc/DiscoverBuilder.h>
 #include <mcrpc/InboundMessage.h>
 #include <mcrpc/Config.h>
+#include <mcrpc/ReplyJitter.h>
 
 namespace mcrpc {
 
+/** Immediate publish (events, manual TX). delay_ms is ignored. */
 using PublishFn = bool (*)(const char* text, void* ctx);
+
+/**
+ * Publish with optional TX delay (RFC-0002 §8).
+ * Transports SHOULD honour ``delay_ms`` (sleep / MeshCore sendFlood delay).
+ */
+using PublishExFn = bool (*)(const char* text, uint32_t delay_ms, void* ctx);
+
+/** Optional entropy for ReplyJitter (return 0..65535). */
+using EntropyFn = uint16_t (*)(void* ctx);
 
 /**
  * Framework facade.
@@ -37,6 +48,17 @@ public:
   void setPublishHandler(PublishFn fn, void* ctx) {
     _publish = fn;
     _publish_ctx = ctx;
+  }
+
+  /** Preferred when the transport can delay TX (MeshCore / HA). */
+  void setPublishExHandler(PublishExFn fn, void* ctx) {
+    _publish_ex = fn;
+    _publish_ex_ctx = ctx;
+  }
+
+  void setEntropy(EntropyFn fn, void* ctx) {
+    _entropy_fn = fn;
+    _entropy_ctx = ctx;
   }
 
   void setNodeIdentity(const char* node_name, const char* group_name) {
@@ -74,6 +96,8 @@ public:
   bool handleIncomingText(const char* text);
   bool handleInbound(const InboundMessage& msg);
   bool publishRaw(const char* text);
+  /** Publish with RFC-0002 stagger delay hint (0 = immediate). */
+  bool publishRaw(const char* text, uint32_t delay_ms);
 
   void buildStatus(StatusBuilder& status);
   void buildDiscover(DiscoverBuilder& discover);
@@ -83,6 +107,8 @@ public:
 private:
   static void onEventThunk(const char* name, const char* kv, void* ctx);
   void onEvent(const char* name, const char* kv);
+  const char* identityForJitter() const;
+  uint16_t entropy16() const;
 
   CommandRegistry _commands;
   CapabilityRegistry _capabilities;
@@ -92,6 +118,10 @@ private:
   Config _config;
   PublishFn _publish = nullptr;
   void* _publish_ctx = nullptr;
+  PublishExFn _publish_ex = nullptr;
+  void* _publish_ex_ctx = nullptr;
+  EntropyFn _entropy_fn = nullptr;
+  void* _entropy_ctx = nullptr;
   const char* _node_name = "";
   const char* _node_id = "";
   const char* _profile = "";

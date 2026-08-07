@@ -45,7 +45,7 @@ void Dispatcher::writePrefixed(ReplyBuffer& reply, const Request& req, const cha
   reply.append(body);
 }
 
-bool Dispatcher::dispatch(const char* line, ReplyBuffer& reply) {
+bool Dispatcher::dispatch(const char* line, ReplyBuffer& reply, Request* out_req) {
   reply.clear();
   Request req;
   ParseResult pr = Parser::parse(line, req);
@@ -57,6 +57,7 @@ bool Dispatcher::dispatch(const char* line, ReplyBuffer& reply) {
     // (returned by the feature handler, not here).
     return false;
   }
+  if (out_req) *out_req = req;
 
   if (!isAddressedToUs(req)) return false;
 

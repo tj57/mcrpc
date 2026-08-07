@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 This project uses independent **protocol**, **SDK**, and **library** versions
 (see `include/mcrpc/Version.h`).
 
+## [1.2.2] — 2026-08-07
+
+RFC-0002 §8: broadcast reply stagger + library `ReplyJitter` / PublishEx.
+
+### Protocol
+
+- Emitters answering `all` MUST delay TX (250–1750 ms, per-node slot + entropy)
+- Events and addressed replies stay outside the broadcast window
+
+### SDK / Library
+
+- SDK **1.2.2**, library **1.2.2**
+- `ReplyJitter.h`, Python `reply_jitter`
+- `McRpc::setPublishExHandler` / `publishRaw(text, delay_ms)`
+- Wire `v=` remains **1.2**
+
 ## [1.2.1] — 2026-08-07
 
 Patch: expose Python `format_uptime` / `short_id8` (parity with C++ `UptimeFormat` / short id).

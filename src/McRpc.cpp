@@ -29,14 +29,32 @@ bool McRpc::handleInbound(const InboundMessage& msg) {
   if (msg.text == nullptr) return false;
   const char* line = Parser::stripSenderPrefix(msg.text);
   ReplyBuffer reply;
-  if (!_dispatcher.dispatch(line, reply)) return false;
-  return publishRaw(reply.data);
+  Request req;
+  if (!_dispatcher.dispatch(line, reply, &req)) return false;
+  // RFC-0002 §8: stagger replies to ``all`` before TX.
+  uint32_t delay = ReplyJitter::delayMsFor(req, identityForJitter(), entropy16());
+  return publishRaw(reply.data, delay);
 }
 
-bool McRpc::publishRaw(const char* text) {
+bool McRpc::publishRaw(const char* text) { return publishRaw(text, 0); }
+
+bool McRpc::publishRaw(const char* text, uint32_t delay_ms) {
   if (!text || !text[0]) return false;
+  if (_publish_ex) return _publish_ex(text, delay_ms, _publish_ex_ctx);
   if (_publish) return _publish(text, _publish_ctx);
+  (void)delay_ms;
   return false;
+}
+
+const char* McRpc::identityForJitter() const {
+  if (_node_id && _node_id[0]) return _node_id;
+  return _node_name ? _node_name : "";
+}
+
+uint16_t McRpc::entropy16() const {
+  if (_entropy_fn) return _entropy_fn(_entropy_ctx);
+  // Deterministic fallback: still staggers peers via identity hash slots.
+  return 0;
 }
 
 void McRpc::buildStatus(StatusBuilder& status) {

@@ -147,7 +147,7 @@ receivers during transition.
 | Axis | 1.2 value |
 |------|-----------|
 | Wire `v=` | `1.2` |
-| SDK / library (informative) | `1.2.0` |
+| SDK / library (informative) | `1.2.2` |
 
 Legacy `protocol=` / `sdk=` in discovery are obsolete for new emitters; readers
 MAY still parse them from transitional peers.
@@ -163,6 +163,7 @@ MAY still parse them from transitional peers.
 | Unknown call-result keys | MUST ignore |
 | Addressing (`@id`, name, all) | Unchanged from RFC-0001 |
 | Tag / profile as RF address | Still forbidden |
+| Reply to `all` | MUST stagger TX (§8) |
 
 ---
 
@@ -184,3 +185,44 @@ ha#8 call scene.nope
 
 event button.pressed count=4
 ```
+
+---
+
+## 8. Broadcast reply stagger (half-duplex)
+
+When multiple peers answer `all <cmd>` on a shared half-duplex radio (MeshCore
+group text), simultaneous TX collides and a transmitting node cannot RX peer
+replies. Android (idle RX) may see every answer while a companion that also
+answered may miss the others.
+
+### 8.1 Requirement
+
+> **Emitters that transmit a reply to a request with `AddressKind::All` MUST
+> delay that TX** by a non-zero stagger drawn from the window below.
+>
+> Addressed replies (`Named` / `@id` / `Self` / `Group`) MUST NOT use the
+> broadcast window (MAY use a short ≤120 ms jitter).
+>
+> Spontaneous **events** MUST NOT use the broadcast window (they are not
+> answers to `all`).
+
+### 8.2 Recommended algorithm (library `ReplyJitter`)
+
+```text
+BROADCAST_MIN_MS = 250
+BROADCAST_MAX_MS = 1750
+SLOT_COUNT       = 8
+slot             = FNV-1a32(identity) % SLOT_COUNT
+slot_w           = (BROADCAST_MAX_MS - BROADCAST_MIN_MS) / SLOT_COUNT
+delay_ms         = BROADCAST_MIN_MS + slot * slot_w + random(0, slot_w)
+```
+
+`identity` SHOULD be the node’s full hex id when known, else the stable node
+name. Transports apply `delay_ms` (sleep, `sendFlood(pkt, delay_ms)`, …).
+
+Reference: `include/mcrpc/ReplyJitter.h`, Python `mcrpc.reply_jitter`.
+
+### 8.3 Compatibility
+
+Wire grammar is unchanged. This is an **emitter timing** rule for protocol 1.2
+peers on shared RF. Clients MUST NOT assume a fixed answer latency for `all`.

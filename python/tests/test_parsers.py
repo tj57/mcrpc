@@ -92,3 +92,21 @@ def test_format_uptime_and_short_id8():
     assert format_uptime(45) == "45s"
     assert short_id8("AABBCCDDEEFF0011") == "aabbccdd"
     assert short_id8(None) == ""
+
+
+def test_reply_jitter_rfc0002():
+    from mcrpc import (
+        BROADCAST_MIN_MS,
+        BROADCAST_MAX_MS,
+        reply_delay_ms,
+        needs_broadcast_stagger,
+        identity_hash,
+    )
+    assert needs_broadcast_stagger(address_kind="All")
+    assert not needs_broadcast_stagger(address_kind="Named", target="ha")
+    d0 = reply_delay_ms(broadcast=True, identity="aabbccdd", entropy=0)
+    d1 = reply_delay_ms(broadcast=True, identity="aabbccdd", entropy=1000)
+    assert BROADCAST_MIN_MS <= d0 <= BROADCAST_MAX_MS
+    assert BROADCAST_MIN_MS <= d1 <= BROADCAST_MAX_MS
+    assert identity_hash("button") != identity_hash("mcYogi")
+    assert reply_delay_ms(broadcast=False, identity="x", entropy=50) <= 120

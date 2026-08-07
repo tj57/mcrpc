@@ -25,9 +25,10 @@ public:
    * Returns true if a reply was written into `reply` (caller must transmit).
    * Returns false if the message was ignored (not addressed to us / empty).
    *
-   * Dispatcher knows only the CommandRegistry — never Feature types.
+   * When ``out_req`` is non-null and the line parses, it receives the Request
+   * (including AddressKind) so the transport can apply RFC-0002 reply stagger.
    */
-  bool dispatch(const char* line, ReplyBuffer& reply);
+  bool dispatch(const char* line, ReplyBuffer& reply, Request* out_req = nullptr);
 
   CommandRegistry& registry() { return _registry; }
 

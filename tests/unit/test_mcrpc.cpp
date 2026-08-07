@@ -327,9 +327,17 @@ static void test_feature_manager() {
 /* -------------------- McRpc facade + inbound -------------------- */
 
 static char g_published[256];
+static uint32_t g_publish_delay = 0;
 static bool capturePublish(const char* text, void* ctx) {
   (void)ctx;
   std::snprintf(g_published, sizeof(g_published), "%s", text);
+  g_publish_delay = 0;
+  return true;
+}
+static bool capturePublishEx(const char* text, uint32_t delay_ms, void* ctx) {
+  (void)ctx;
+  std::snprintf(g_published, sizeof(g_published), "%s", text);
+  g_publish_delay = delay_ms;
   return true;
 }
 
@@ -349,24 +357,36 @@ static void test_mcrpc_inbound_and_events() {
   } pingf;
 
   rpc.features().add(&pingf);
-  rpc.setPublishHandler(capturePublish, nullptr);
+  rpc.setPublishExHandler(capturePublishEx, nullptr);
   rpc.setNodeIdentity("tracker", "mych");
+  rpc.setNodeId("aabbccddeeff0011");
   rpc.setFirmwareVersion("test");
   rpc.setProfile("tracker");
   rpc.setIdentityCallbacks(fakeUptime, fakeRssi, nullptr);
   rpc.begin();
 
   g_published[0] = 0;
+  g_publish_delay = 999;
   EXPECT(rpc.handleIncomingText("tracker: tracker ping") == true);
   EXPECT(std::strcmp(g_published, "pong") == 0);
+  EXPECT(g_publish_delay <= ReplyJitter::ADDRESSED_MAX_MS);
+
+  g_published[0] = 0;
+  g_publish_delay = 0;
+  EXPECT(rpc.handleIncomingText("all ping") == true);
+  EXPECT(std::strcmp(g_published, "pong") == 0);
+  EXPECT(g_publish_delay >= ReplyJitter::BROADCAST_MIN_MS);
+  EXPECT(g_publish_delay <= ReplyJitter::BROADCAST_MAX_MS);
 
   g_published[0] = 0;
   EXPECT(rpc.handleIncomingText("other ping") == false);
 
   g_published[0] = 0;
+  g_publish_delay = 42;
   EXPECT(rpc.events().publish("motion", "x=1") == true);
   EXPECT(std::strstr(g_published, "event motion") != nullptr);
   EXPECT(std::strstr(g_published, "x=1") != nullptr);
+  EXPECT(g_publish_delay == 0);  // events are immediate
 
   InboundMessage msg;
   msg.text = "tracker#3 ping";

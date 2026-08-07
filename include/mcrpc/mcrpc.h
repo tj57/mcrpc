@@ -18,6 +18,7 @@
 #include <mcrpc/OutboundBuilder.h>
 #include <mcrpc/CallResult.h>
 #include <mcrpc/UptimeFormat.h>
+#include <mcrpc/ReplyJitter.h>
 #include <mcrpc/StatusBuilder.h>
 #include <mcrpc/DiscoverBuilder.h>
 #include <mcrpc/CommandRegistry.h>
