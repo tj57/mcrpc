@@ -15,13 +15,13 @@ Details: [development/COMMIT.md](development/COMMIT.md).
 ## Configuration
 
 Developer must never modify production Home Assistant configuration, and must
-never rename the production node (**mcYogi**), production channels (**mcYogi**),
+never rename the production node (**ha-peer**), production channels (**ha-peer**),
 or production PSKs during development or automated tests.
 
 Temporary changes: **backup → test → restore automatically**.
 
-Config Entry title may remain **mcCtrl** (cosmetic) while the device name is
-**mcYogi** — they may differ; no rename / migration of the entry title.
+Config Entry title may remain **lab-channel** (cosmetic) while the device name is
+**ha-peer** — they may differ; no rename / migration of the entry title.
 
 ## QA
 

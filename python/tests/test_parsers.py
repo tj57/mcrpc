@@ -108,5 +108,5 @@ def test_reply_jitter_rfc0002():
     d1 = reply_delay_ms(broadcast=True, identity="aabbccdd", entropy=1000)
     assert BROADCAST_MIN_MS <= d0 <= BROADCAST_MAX_MS
     assert BROADCAST_MIN_MS <= d1 <= BROADCAST_MAX_MS
-    assert identity_hash("button") != identity_hash("mcYogi")
+    assert identity_hash("button") != identity_hash("ha-peer")
     assert reply_delay_ms(broadcast=False, identity="x", entropy=50) <= 120
