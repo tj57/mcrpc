@@ -289,18 +289,19 @@ Devices MAY send asynchronous events.
 Examples
 
 ```
-event battery_low
+event battery.low
 
 event panic
 
 event motion
 
-event gps_fix
+event gps.fix
 
-event button_pressed
+event button.pressed
 ```
 
-Events never require requests.
+Events never require requests. New emitters SHOULD use dotted names
+(`ns.action` style) aligned with `call` procedures (RFC-0002).
 
 ---
 
@@ -742,10 +743,27 @@ Normative summary — full text in `docs/rfc/RFC-0001-mcrpc-1.1.md`.
 **Addressing:** `name` | `@hex` | `all` (plus legacy `self` / `group:`).
 Capabilities and UI tags are **not** addresses. Request id remains `name#digits`.
 
-**Discovery:** devices SHOULD advertise full `id=`, canonical `caps=` /
-`features=`, `uptime=`, prefer `tag=` (legacy `profile=` allowed).
+**Discovery (1.1, superseded for emitters by 1.2):** full `id=`, canonical `caps=` /
+`features=`, `uptime=`, prefer `tag=`.
 
 **CSV:** lowercase, unique, alphabetically sorted, no spaces.
 
 Clients MUST ignore unknown fields (unchanged).
+
+---
+
+# 25. Protocol 1.2 (RFC-0002)
+
+Normative summary — full text in `docs/rfc/RFC-0002-mcrpc-1.2-slim-call.md`.
+
+**Discovery (slim):** `<name> id=<8hex> fw=… v=1.2 [tag=] [up=] [caps=]`.
+Emitters MUST NOT add `protocol*` / `sdk` / `features=` / `transport=` / `profile=`
+or full-length ids on discovery.
+
+**Status (rich):** `id_full`, rssi/snr, battery/voltage, heap, `transport`, …
+Unknown fields MUST be ignored.
+
+**`call`:** ordinary command `call ns.action [key=value…]`. Parser MUST NOT
+change state. Results: `ok` / `err <code>` / `busy` / `retry` with optional
+`key=value` payload only (no free-form prose).
 

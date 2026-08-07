@@ -6,9 +6,18 @@ from pathlib import Path
 
 import pytest
 
-from mcrpc import DiscoverBuilder, Dispatcher, StatusBuilder, build_event, parse
+from mcrpc import (
+    DiscoverBuilder,
+    Dispatcher,
+    StatusBuilder,
+    build_call_err,
+    build_call_ok,
+    build_event,
+    is_valid_proc,
+    parse,
+)
 from mcrpc.request import ParseResult
-from mcrpc.version import PROTOCOL_VERSION, SDK_VERSION
+from mcrpc.version import PROTOCOL_VERSION
 
 GOLDEN_DIR = Path(__file__).resolve().parents[2] / "tests" / "golden" / "cases"
 
@@ -59,11 +68,25 @@ def load_cases(path: Path) -> list[dict]:
     return cases
 
 
+def _handle_call(req):
+    if not req.args:
+        return build_call_err("invalid_argument")
+    proc = req.args[0]
+    if not is_valid_proc(proc):
+        return build_call_err("invalid_argument", reason="proc")
+    if proc == "scene.nope":
+        return build_call_err("unknown_proc")
+    if proc == "button.pressed":
+        return build_call_ok(lat="50", lon="19")
+    return build_call_ok()
+
+
 def _make_dispatcher() -> Dispatcher:
     d = Dispatcher()
     d.set_node_name("tracker")
     d.set_group_name("mych")
     d.register("ping", lambda req: "pong")
+    d.register("call", _handle_call)
     d.register("relay", lambda req: "err unsupported")
     d.register("battery", lambda req: "err unsupported")
     d.register("gps", lambda req: "err unsupported")
@@ -103,18 +126,23 @@ def test_golden_file(case_file: Path) -> None:
         if mode == "build_discover":
             b = DiscoverBuilder()
             b.set_node_name("tracker")
-            b.add("profile", "tracker")
+            b.add("id", "3cbbf74e")
             b.add("fw", "test")
-            b.add("protocol", PROTOCOL_VERSION)
-            b.add("sdk", SDK_VERSION)
+            b.add("v", PROTOCOL_VERSION)
+            b.add("tag", "tracker")
+            b.add("up", "42s")
+            b.add("caps", "battery,button")
             got = b.write()
             assert got == case["out"]
             continue
         if mode == "build_status":
             s = StatusBuilder()
             s.add("name", "tracker")
-            s.add("profile", "tracker")
+            s.add("id", "3cbbf74e")
             s.add("fw", "test")
+            s.add("v", PROTOCOL_VERSION)
+            s.add("tag", "tracker")
+            s.add("transport", "meshcore")
             got = s.write()
             assert got.startswith(case["out"]) or got == case["out"]
             continue

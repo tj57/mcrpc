@@ -140,7 +140,10 @@ static void test_parser_malformed() {
 static void test_parser_sender_prefix() {
   EXPECT(std::strcmp(Parser::stripSenderPrefix("button: ha ping"), "ha ping") == 0);
   EXPECT(std::strcmp(Parser::stripSenderPrefix("ha ping"), "ha ping") == 0);
-  EXPECT(std::strcmp(Parser::stripSenderPrefix("a b: x"), "a b: x") == 0);  // space before colon
+  // MeshCore sender names may contain spaces
+  EXPECT(std::strcmp(Parser::stripSenderPrefix("a b: x"), "x") == 0);
+  EXPECT(std::strcmp(Parser::stripSenderPrefix("Home Assistant: all ping"), "all ping") == 0);
+  EXPECT(std::strcmp(Parser::stripSenderPrefix("group:sensors ping"), "group:sensors ping") == 0);
   EXPECT(std::strcmp(Parser::stripSenderPrefix(nullptr), "") == 0);
 }
 
@@ -382,7 +385,7 @@ static void test_status_discover_via_framework() {
     void registerCommands(CommandRegistry&) override {}
     void registerCapabilities(CapabilityRegistry& c) override { c.registerCapability("battery"); }
     void contributeStatus(StatusBuilder& s) override { s.add("battery", 88); }
-    void contributeDiscover(DiscoverBuilder& d) override { d.add("battery", "yes"); }
+    void contributeDiscover(DiscoverBuilder& d) override { (void)d; }
   } batt;
 
   rpc.features().add(&batt);
@@ -398,13 +401,18 @@ static void test_status_discover_via_framework() {
   status.writeTo(reply);
   EXPECT(std::strstr(reply.data, "name=n1") != nullptr);
   EXPECT(std::strstr(reply.data, "battery=88") != nullptr);
-  EXPECT(std::strstr(reply.data, "uptime=42") != nullptr);
+  EXPECT(std::strstr(reply.data, "up=42s") != nullptr);
+  EXPECT(std::strstr(reply.data, "tag=sensor") != nullptr);
+  EXPECT(std::strstr(reply.data, "v=1.2") != nullptr);
 
   DiscoverBuilder discover;
   rpc.buildDiscover(discover);
   discover.writeTo(reply);
   EXPECT(std::strstr(reply.data, "n1 ") != nullptr);
-  EXPECT(std::strstr(reply.data, "battery=yes") != nullptr);
+  EXPECT(std::strstr(reply.data, "caps=battery") != nullptr);
+  EXPECT(std::strstr(reply.data, "fw=fw1") != nullptr);
+  EXPECT(std::strstr(reply.data, "v=1.2") != nullptr);
+  EXPECT(std::strstr(reply.data, "up=42s") != nullptr);
 
   rpc.buildCaps(reply);
   EXPECT(std::strcmp(reply.data, "battery") == 0);

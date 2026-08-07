@@ -39,10 +39,11 @@ public:
     reply.clear();
     reply.append(_name[0] ? _name : "node");
     for (size_t i = 0; i < _count; i++) {
-      reply.appendChar(' ');
-      reply.append(_keys[i]);
-      reply.appendChar('=');
-      reply.append(_vals[i]);
+      // Stop cleanly when the RF reply budget is full (keep earlier fields).
+      if (!reply.appendChar(' ')) break;
+      if (!reply.append(_keys[i])) break;
+      if (!reply.appendChar('=')) break;
+      if (!reply.append(_vals[i])) break;
     }
   }
 

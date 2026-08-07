@@ -26,7 +26,7 @@ void BatteryFeature::contributeStatus(StatusBuilder& status) {
 }
 
 void BatteryFeature::contributeDiscover(DiscoverBuilder& discover) {
-  discover.add("battery", "yes");
+  (void)discover;  // RFC-0002: caps= only
 }
 
 void BatteryFeature::loop() {
@@ -37,7 +37,7 @@ void BatteryFeature::loop() {
     if (!_low_latched) {
       char kv[32];
       snprintf(kv, sizeof(kv), "voltage=%.2f", (double)v);
-      publishEvent("battery_low", kv);
+      publishEvent("battery.low", kv);
       _low_latched = true;
     }
   } else if (v >= _low_v + 0.1f) {

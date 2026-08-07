@@ -36,13 +36,11 @@ static bool readToken(const char*& p, char* dest, size_t dest_size, bool ident_o
 
 const char* Parser::stripSenderPrefix(const char* text) {
   if (text == nullptr) return "";
+  // MeshCore group text is "<sender name>: <payload>". Sender names may contain
+  // spaces (e.g. "Home Assistant: all ping"). Require ": " so protocol forms
+  // like "group:sensors" are left untouched.
   const char* colon = strchr(text, ':');
   if (colon == nullptr) return text;
-  const char* p = text;
-  while (p < colon) {
-    if (*p == ' ' || *p == '\t') return text;
-    ++p;
-  }
   const char* msg = colon + 1;
   if (*msg != ' ' && *msg != '\t') return text;
   while (*msg == ' ' || *msg == '\t') ++msg;

@@ -10,11 +10,16 @@ from mcrpc import (
     Dispatcher,
     ParseResult,
     StatusBuilder,
+    build_call_err,
+    build_call_ok,
     build_error,
     build_event,
     build_ok,
     build_request,
+    is_valid_proc,
     parse,
+    parse_call_result,
+    parse_discover,
     strip_sender_prefix,
 )
 
@@ -57,6 +62,27 @@ def test_at_id_addressing() -> None:
     assert req.command == "discovery"
 
 
+def test_call_parser_neutral() -> None:
+    r, req = parse("ha call scene.morning")
+    assert r == ParseResult.Ok
+    assert req.command == "call"
+    assert req.args == ["scene.morning"]
+    assert is_valid_proc("button.pressed")
+    assert is_valid_proc("ha.notify")
+    assert not is_valid_proc("button_pressed")
+    assert not is_valid_proc("button.press.v2")
+
+
+def test_call_result_kv_only() -> None:
+    assert build_call_ok() == "ok"
+    assert build_call_ok(lat="50", lon="19") == "ok lat=50 lon=19"
+    assert build_call_err("denied", reason="acl") == "err denied reason=acl"
+    got = parse_call_result("#7 ok state=closed")
+    assert got["valid"] and got["ok"] and got["fields"]["state"] == "closed"
+    bad = parse_call_result("ok button pressed")
+    assert bad["valid"] is False
+
+
 def test_addressing() -> None:
     r, req = parse("all ping")
     assert req.address_kind == AddressKind.All
@@ -83,7 +109,7 @@ def test_case() -> None:
 def test_dispatch_errors_broadcast() -> None:
     d = Dispatcher()
     d.register("ping", lambda req: "pong")
-    d.register("status", lambda req: "status name=n profile=p fw=f uptime=1 rssi=0")
+    d.register("status", lambda req: "status name=n tag=p fw=f up=1s rssi=0")
     d.register("relay", lambda req: "err unsupported")
     d.register("battery", lambda req: "err unsupported")
     d.register("gps", lambda req: "err unsupported")
@@ -111,14 +137,22 @@ def test_builders_and_events() -> None:
 
     d = DiscoverBuilder()
     d.set_node_name("tracker")
-    d.add("profile", "tracker")
-    d.add("protocol", PROTOCOL_VERSION)
-    d.add("sdk", SDK_VERSION)
+    d.add("tag", "tracker")
+    d.add("fw", "fw")
+    d.add_versions()
     disc = d.write()
-    assert "protocol=1.1" in disc
-    assert "sdk=1.1.0" in disc
+    assert "v=1.2" in disc
+    assert PROTOCOL_VERSION == "1.2"
+    assert SDK_VERSION == "1.2.0"
 
-    assert build_event("button_pressed", "count=1") == "event button_pressed count=1"
+    parsed = parse_discover(
+        "button id=3cbbf74e tag=ha fw=2.11.0 v=1.2 up=1h33m caps=battery,button extra=1"
+    )
+    assert parsed.identity_id == "3cbbf74e"
+    assert parsed.wire_version == "1.2"
+    assert "extra" in parsed.fields  # unknown fields preserved / ignored by clients
+
+    assert build_event("button.pressed", "count=1") == "event button.pressed count=1"
     assert build_error("timeout") == "err timeout"
 
 
@@ -130,6 +164,7 @@ def test_response_generation() -> None:
 
     assert strip_sender_prefix("Alice: tracker ping") == "tracker ping"
     assert strip_sender_prefix("tracker ping") == "tracker ping"
+    assert strip_sender_prefix("Home Assistant: all ping") == "all ping"
     assert strip_sender_prefix("group:sensors ping") == "group:sensors ping"
     r, req = parse(strip_sender_prefix("group:sensors ping"))
     assert r == ParseResult.Ok and req.address_kind == AddressKind.Group

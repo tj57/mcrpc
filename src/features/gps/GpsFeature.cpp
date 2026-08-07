@@ -32,7 +32,7 @@ void GpsFeature::contributeStatus(StatusBuilder& status) {
 }
 
 void GpsFeature::contributeDiscover(DiscoverBuilder& discover) {
-  discover.add("gps", "yes");
+  (void)discover;  // RFC-0002: caps= only
 }
 
 bool GpsFeature::writeFix(CommandContext& ctx, bool request_if_missing) {

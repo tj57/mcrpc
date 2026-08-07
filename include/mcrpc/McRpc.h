@@ -45,7 +45,7 @@ public:
     _dispatcher.setGroupName(group_name);
   }
 
-  /** Full hex id (no '@'). Enables @id addressing (RFC-0001). */
+  /** Full hex id (no '@'). Enables @id addressing; discovery emits 8-char prefix. */
   void setNodeId(const char* id) {
     _node_id = id ? id : "";
     _dispatcher.setNodeId(_node_id);
@@ -53,8 +53,9 @@ public:
 
   void setFirmwareVersion(const char* fw) { _firmware = fw ? fw : ""; }
   void setProfile(const char* profile) { _profile = profile ? profile : ""; }
-  /** Preferred UI tag (RFC-0001); also emitted as legacy profile= when set. */
+  /** Preferred UI tag (RFC-0002); discovery emits tag= only (not profile=). */
   void setTag(const char* tag) { _tag = tag ? tag : ""; }
+  void setTransport(const char* transport) { _transport = transport ? transport : ""; }
 
   using UptimeFn = uint32_t (*)(void*);
   using RssiFn = int (*)(void*);
@@ -96,6 +97,7 @@ private:
   const char* _profile = "";
   const char* _tag = "";
   const char* _firmware = "";
+  const char* _transport = "meshcore";
   UptimeFn _uptime_fn = nullptr;
   RssiFn _rssi_fn = nullptr;
   void* _id_ctx = nullptr;

@@ -1,14 +1,14 @@
-# event formatting (build only)
+# event formatting (build only) — RFC-0002 dotted names
 IN
-button_pressed count=3
+button.pressed count=3
 OUT
-event button_pressed count=3
+event button.pressed count=3
 MODE
 build_event
 ---
 IN
-battery_low voltage=3.50
+battery.low voltage=3.50
 OUT
-event battery_low voltage=3.50
+event battery.low voltage=3.50
 MODE
 build_event

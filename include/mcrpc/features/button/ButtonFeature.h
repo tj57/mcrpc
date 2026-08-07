@@ -20,10 +20,10 @@ public:
   void contributeStatus(StatusBuilder& status) override;
   void contributeDiscover(DiscoverBuilder& discover) override;
 
-  void notifyPressed();
+  void notifyPressed(uint8_t btn_id = 1);
   /** Edge events for hold detection (host polls MomentaryButton::isPressed). */
-  void notifyDown();
-  void notifyUp();
+  void notifyDown(uint8_t btn_id = 1);
+  void notifyUp(uint8_t btn_id = 1);
   bool lastState() const { return _pressed; }
 
 private:

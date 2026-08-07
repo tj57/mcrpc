@@ -1,6 +1,6 @@
 IN
 -
 OUT
-status name=tracker profile=tracker fw=test
+status name=tracker id=3cbbf74e fw=test v=1.2 tag=tracker transport=meshcore
 MODE
 build_status

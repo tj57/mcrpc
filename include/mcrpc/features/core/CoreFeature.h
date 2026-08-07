@@ -13,6 +13,7 @@ public:
   const char* name() const override { return "core"; }
 
   void registerCommands(CommandRegistry& commands) override;
+  void contributeStatus(StatusBuilder& status) override;
   // core is not listed in caps
 
 private:
@@ -23,6 +24,7 @@ private:
   static bool cmdDiscover(CommandContext& ctx);
   static bool cmdHelp(CommandContext& ctx);
   static bool cmdCaps(CommandContext& ctx);
+  static bool cmdCall(CommandContext& ctx);
 };
 
 }  // namespace mcrpc

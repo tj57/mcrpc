@@ -1,6 +1,14 @@
 """mcRPC — pure-Python protocol library matching the C++ reference."""
 
 from .builder import build_error, build_event, build_ok, build_request, prefix_request_id
+from .call_result import (
+    build_call_busy,
+    build_call_err,
+    build_call_ok,
+    build_call_retry,
+    is_valid_proc,
+    parse_call_result,
+)
 from .client import PendingRequest, RequestCorrelator
 from .discover import DiscoverBuilder, ParsedDiscover, parse_discover
 from .dispatcher import Dispatcher
@@ -52,7 +60,28 @@ _BATTERY_WIRE_KEYS = frozenset(
     }
 )
 _STATUS_KNOWN = frozenset(
-    {"name", "profile", "fw", "firmware", "uptime", "rssi", "battery", "voltage", "gps", "sat"}
+    {
+        "name",
+        "profile",
+        "tag",
+        "fw",
+        "firmware",
+        "uptime",
+        "up",
+        "rssi",
+        "snr",
+        "battery",
+        "voltage",
+        "gps",
+        "sat",
+        "id",
+        "id_full",
+        "v",
+        "heap",
+        "transport",
+        "caps",
+        "charging",
+    }
 )
 _DISCOVER_KNOWN = frozenset(
     {
@@ -65,11 +94,13 @@ _DISCOVER_KNOWN = frozenset(
         "protocol_min",
         "protocol_max",
         "sdk",
+        "v",
         "name",
         "id",
         "caps",
         "features",
         "uptime",
+        "up",
         "auth",
         "transport",
         "vendor",
@@ -149,12 +180,19 @@ def parse_status_fields(raw: str | None) -> dict:
         "raw": s.raw,
         "request_id": s.request_id,
         "name": p.get("name"),
-        "profile": p.get("profile"),
+        "profile": p.get("profile") or p.get("tag"),
+        "tag": p.get("tag") or p.get("profile"),
         "firmware": p.get("fw") or p.get("firmware"),
-        "uptime": p.get("uptime"),
+        "uptime": p.get("up") if p.get("up") is not None else p.get("uptime"),
         "rssi": p.get("rssi"),
+        "snr": p.get("snr"),
         "battery": p.get("battery"),
         "voltage": p.get("voltage"),
+        "id": p.get("id"),
+        "id_full": p.get("id_full"),
+        "v": p.get("v"),
+        "heap": p.get("heap"),
+        "transport": p.get("transport"),
         "gps": p.get("gps"),
         "extra": _extra_from(p, _STATUS_KNOWN),
         "parameters": p,
@@ -176,10 +214,11 @@ def parse_discover_fields(raw: str | None) -> dict:
         "identity_id": d.identity_id,
         "board": d.board,
         "firmware": d.firmware,
-        "protocol": d.protocol,
+        "protocol": d.protocol or d.wire_version,
         "protocol_min": d.protocol_min,
         "protocol_max": d.protocol_max,
         "sdk": d.sdk,
+        "v": d.wire_version,
         "uptime": d.uptime,
         "features": d.features,
         "feature_tokens": list(d.feature_tokens),
@@ -232,4 +271,10 @@ __all__ = [
     "Dispatcher",
     "PendingRequest",
     "RequestCorrelator",
+    "is_valid_proc",
+    "build_call_ok",
+    "build_call_err",
+    "build_call_busy",
+    "build_call_retry",
+    "parse_call_result",
 ]

@@ -4,8 +4,8 @@
  * @file Version.h
  * @brief Independent versioning for protocol, SDK API, and package release.
  *
- * Protocol 1.1 (RFC-0001): additive @id addressing + discovery metadata.
- * Library 1.1.0: RFC-0001 GA (protocol 1.1).
+ * Protocol 1.2 (RFC-0002): slim discovery, rich status, namespaced call.
+ * Library 1.2.0: RFC-0002 implementation.
  */
 
 namespace mcrpc {
@@ -14,36 +14,36 @@ namespace mcrpc {
 #define MCRPC_PROTOCOL_VERSION_MAJOR 1
 #endif
 #ifndef MCRPC_PROTOCOL_VERSION_MINOR
-#define MCRPC_PROTOCOL_VERSION_MINOR 1
+#define MCRPC_PROTOCOL_VERSION_MINOR 2
 #endif
 #ifndef MCRPC_PROTOCOL_VERSION_STRING
-#define MCRPC_PROTOCOL_VERSION_STRING "1.1"
+#define MCRPC_PROTOCOL_VERSION_STRING "1.2"
 #endif
 
 #ifndef MCRPC_SDK_VERSION_MAJOR
 #define MCRPC_SDK_VERSION_MAJOR 1
 #endif
 #ifndef MCRPC_SDK_VERSION_MINOR
-#define MCRPC_SDK_VERSION_MINOR 1
+#define MCRPC_SDK_VERSION_MINOR 2
 #endif
 #ifndef MCRPC_SDK_VERSION_PATCH
 #define MCRPC_SDK_VERSION_PATCH 0
 #endif
 #ifndef MCRPC_SDK_VERSION_STRING
-#define MCRPC_SDK_VERSION_STRING "1.1.0"
+#define MCRPC_SDK_VERSION_STRING "1.2.0"
 #endif
 
 #ifndef MCRPC_LIBRARY_VERSION_MAJOR
 #define MCRPC_LIBRARY_VERSION_MAJOR 1
 #endif
 #ifndef MCRPC_LIBRARY_VERSION_MINOR
-#define MCRPC_LIBRARY_VERSION_MINOR 1
+#define MCRPC_LIBRARY_VERSION_MINOR 2
 #endif
 #ifndef MCRPC_LIBRARY_VERSION_PATCH
 #define MCRPC_LIBRARY_VERSION_PATCH 0
 #endif
 #ifndef MCRPC_LIBRARY_VERSION_STRING
-#define MCRPC_LIBRARY_VERSION_STRING "1.1.0"
+#define MCRPC_LIBRARY_VERSION_STRING "1.2.0"
 #endif
 
 inline constexpr int protocolVersionCode() {

@@ -21,29 +21,44 @@ void ButtonFeature::contributeStatus(StatusBuilder& status) {
 }
 
 void ButtonFeature::contributeDiscover(DiscoverBuilder& discover) {
-  discover.add("button", "yes");
+  // RFC-0002: keep discovery slim — capability appears in caps= only.
+  (void)discover;
 }
 
-void ButtonFeature::notifyPressed() {
+void ButtonFeature::notifyPressed(uint8_t btn_id) {
   _pressed = true;
   _press_count++;
-  char kv[40];
-  snprintf(kv, sizeof(kv), "count=%lu", (unsigned long)_press_count);
-  publishEvent("button_pressed", kv);
+  char kv[48];
+  if (btn_id <= 1) {
+    snprintf(kv, sizeof(kv), "count=%lu", (unsigned long)_press_count);
+  } else {
+    snprintf(kv, sizeof(kv), "id=%u count=%lu", (unsigned)btn_id, (unsigned long)_press_count);
+  }
+  publishEvent("button.pressed", kv);
   _pressed = false;
 }
 
-void ButtonFeature::notifyDown() {
+void ButtonFeature::notifyDown(uint8_t btn_id) {
   _pressed = true;
-  publishEvent("button_down", nullptr);
+  char kv[24];
+  if (btn_id <= 1) {
+    publishEvent("button.down", nullptr);
+  } else {
+    snprintf(kv, sizeof(kv), "id=%u", (unsigned)btn_id);
+    publishEvent("button.down", kv);
+  }
 }
 
-void ButtonFeature::notifyUp() {
+void ButtonFeature::notifyUp(uint8_t btn_id) {
   _pressed = false;
   _press_count++;
-  char kv[40];
-  snprintf(kv, sizeof(kv), "count=%lu", (unsigned long)_press_count);
-  publishEvent("button_up", kv);
+  char kv[48];
+  if (btn_id <= 1) {
+    snprintf(kv, sizeof(kv), "count=%lu", (unsigned long)_press_count);
+  } else {
+    snprintf(kv, sizeof(kv), "id=%u count=%lu", (unsigned)btn_id, (unsigned long)_press_count);
+  }
+  publishEvent("button.up", kv);
 }
 
 bool ButtonFeature::cmdButton(CommandContext& ctx) {

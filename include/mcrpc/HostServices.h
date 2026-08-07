@@ -8,6 +8,7 @@
  * Features must not call platform SDKs directly.
  */
 #include <stdint.h>
+#include <mcrpc/McRpcTypes.h>
 
 namespace mcrpc {
 
@@ -56,6 +57,30 @@ struct HostServices {
     return false;
   }
   virtual bool displayClear() { return false; }
+
+  /**
+   * Handle `call ns.action` (RFC-0002). Parser is unaware of RPC semantics.
+   * Write a CallResult line into ctx.reply (`ok` / `err …` / `busy` / `retry`
+   * with optional key=value only). Return true if handled.
+   * Default: not handled → CoreFeature replies `err unknown_proc`.
+   */
+  virtual bool handleCall(const char* proc, CommandContext& ctx) {
+    (void)proc;
+    (void)ctx;
+    return false;
+  }
+
+  /** Free heap bytes; return false if unknown. */
+  virtual bool readHeapFree(uint32_t& bytes) {
+    (void)bytes;
+    return false;
+  }
+
+  /** SNR in dB (integer); return false if unknown. */
+  virtual bool readSnr(int& snr_db) {
+    (void)snr_db;
+    return false;
+  }
 
   /** Optional back-pointer set by the host for event publishing. */
   class McRpc* engine = nullptr;

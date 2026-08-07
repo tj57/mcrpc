@@ -18,10 +18,13 @@ namespace mcrpc {
 #endif
 
 #ifndef MCRPC_MAX_TOKEN
-#define MCRPC_MAX_TOKEN 48
+// Enough for full 32-byte pubkey hex (64) + NUL in discovery id= / @addressing.
+#define MCRPC_MAX_TOKEN 72
 #endif
 
 #ifndef MCRPC_MAX_REPLY
+// Full discover may exceed MeshCore air budget; transport truncates. Keep headroom
+// so id=/protocol=* (emitted first) fit before optional feature fields.
 #define MCRPC_MAX_REPLY 192
 #endif
 

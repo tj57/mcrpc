@@ -17,8 +17,9 @@
 | [protocol/COMMAND_COVERAGE.md](protocol/COMMAND_COVERAGE.md) | RC command + stress coverage |
 | [DEVELOPMENT_RULES.md](DEVELOPMENT_RULES.md) | Mandatory git / config / QA / release rules |
 | [DEFINITION_OF_DONE.md](DEFINITION_OF_DONE.md) | Phase DoD + release train |
-| [rfc/RFC-0001-mcrpc-1.1.md](rfc/RFC-0001-mcrpc-1.1.md) | Draft: identity / caps / metadata (architecture frozen) |
-| [rfc/IMPLEMENTATION_PLAN-RFC-0001.md](rfc/IMPLEMENTATION_PLAN-RFC-0001.md) | Phased implementation plan |
+| [rfc/RFC-0001-mcrpc-1.1.md](rfc/RFC-0001-mcrpc-1.1.md) | Identity / caps (1.1; addressing still in force) |
+| [rfc/RFC-0002-mcrpc-1.2-slim-call.md](rfc/RFC-0002-mcrpc-1.2-slim-call.md) | Slim discovery, rich status, namespaced call |
+| [rfc/IMPLEMENTATION_PLAN-RFC-0001.md](rfc/IMPLEMENTATION_PLAN-RFC-0001.md) | Phased implementation plan (1.1) |
 | [rfc/ANDROID_PHASE4.md](rfc/ANDROID_PHASE4.md) | Android Phase 4 contract (no app tree here) |
 | [development/RELEASE.md](development/RELEASE.md) | Release process |
 | [homeassistant.md](homeassistant.md) | HA integration design |

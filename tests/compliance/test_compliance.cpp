@@ -24,13 +24,23 @@ static bool hPing(CommandContext& ctx) {
 
 static bool hStatus(CommandContext& ctx) {
   ctx.reply->clear();
-  ctx.reply->append("status name=n profile=p fw=f uptime=1 rssi=0");
+  ctx.reply->append("status name=n tag=p fw=f up=1s rssi=0");
   return true;
 }
 
 static bool hUnsupported(CommandContext& ctx) {
   ctx.reply->clear();
   ctx.reply->append("err unsupported");
+  return true;
+}
+
+static bool hCall(CommandContext& ctx) {
+  if (ctx.request->argc < 1 || !CallResult::isValidProc(ctx.request->args[0])) {
+    CallResult::err(*ctx.reply, "invalid_argument");
+    return true;
+  }
+  CallResult::ok(*ctx.reply);
+  CallResult::appendKv(*ctx.reply, "state", "closed");
   return true;
 }
 
@@ -78,6 +88,19 @@ static void test_case() {
   EXPECT(std::strcmp(r.args[1], "ON") == 0);
 }
 
+static void test_call_parser_neutral() {
+  Request r;
+  EXPECT(Parser::parse("ha call scene.morning", r) == ParseResult::Ok);
+  EXPECT(std::strcmp(r.command, "call") == 0);
+  EXPECT(r.argc == 1);
+  EXPECT(std::strcmp(r.args[0], "scene.morning") == 0);
+  EXPECT(CallResult::isValidProc("button.pressed"));
+  EXPECT(CallResult::isValidProc("ha.notify"));
+  EXPECT(!CallResult::isValidProc("button_pressed"));
+  EXPECT(!CallResult::isValidProc("button.press.v2"));
+  EXPECT(!CallResult::isValidProc(".pressed"));
+}
+
 /* ---------- Dispatcher / errors / broadcast ---------- */
 
 static void test_dispatch_errors_broadcast() {
@@ -87,6 +110,7 @@ static void test_dispatch_errors_broadcast() {
   reg.registerCommand("relay", hUnsupported);
   reg.registerCommand("battery", hUnsupported);
   reg.registerCommand("gps", hUnsupported);
+  reg.registerCommand("call", hCall);
   Dispatcher d(reg);
   d.setNodeName("tracker");
   d.setGroupName("mych");
@@ -114,6 +138,9 @@ static void test_dispatch_errors_broadcast() {
 
   EXPECT(d.dispatch("group:mych ping", reply) == true);
   EXPECT(d.dispatch("group:x ping", reply) == false);
+
+  EXPECT(d.dispatch("tracker#7 call button.pressed", reply) == true);
+  EXPECT(std::strcmp(reply.data, "#7 ok state=closed") == 0);
 }
 
 /* ---------- Builders / events / caps ---------- */
@@ -129,18 +156,19 @@ static void test_builders_and_events() {
 
   DiscoverBuilder d;
   d.setNodeName("tracker");
-  d.add("profile", "tracker");
-  d.add("protocol", protocolVersionString());
-  d.add("sdk", sdkVersionString());
+  d.add("tag", "tracker");
+  d.add("fw", "fw");
+  d.add("v", protocolVersionString());
   d.writeTo(r);
-  EXPECT(std::strstr(r.data, "protocol=1.1") != nullptr);
-  EXPECT(std::strstr(r.data, "sdk=1.1.0") != nullptr);
+  EXPECT(std::strstr(r.data, "v=1.2") != nullptr);
+  EXPECT(std::strstr(r.data, "tag=tracker") != nullptr);
 
-  OutboundBuilder::event(r, "button_pressed", "count=1");
-  EXPECT(std::strcmp(r.data, "event button_pressed count=1") == 0);
+  OutboundBuilder::event(r, "button.pressed", "count=1");
+  EXPECT(std::strcmp(r.data, "event button.pressed count=1") == 0);
 
-  OutboundBuilder::error(r, "timeout");
-  EXPECT(std::strcmp(r.data, "err timeout") == 0);
+  CallResult::err(r, "unsupported");
+  CallResult::appendKv(r, "feature", "gps");
+  EXPECT(std::strcmp(r.data, "err unsupported feature=gps") == 0);
 
   CapabilityRegistry caps;
   caps.registerCapability("gps");
@@ -178,11 +206,21 @@ static void test_response_generation() {
   const char* stripped = Parser::stripSenderPrefix("Alice: tracker ping");
   EXPECT(std::strcmp(stripped, "tracker ping") == 0);
   EXPECT(std::strcmp(Parser::stripSenderPrefix("tracker ping"), "tracker ping") == 0);
-  // Must not treat group: addressing as a chat sender prefix
+  EXPECT(std::strcmp(Parser::stripSenderPrefix("Home Assistant: all ping"), "all ping") == 0);
   EXPECT(std::strcmp(Parser::stripSenderPrefix("group:sensors ping"), "group:sensors ping") == 0);
   Request gr;
   EXPECT(Parser::parse(Parser::stripSenderPrefix("group:sensors ping"), gr) == ParseResult::Ok);
   EXPECT(gr.address_kind == AddressKind::Group);
+}
+
+static void test_uptime_format() {
+  char buf[16];
+  EXPECT(formatUptime(45, buf, sizeof(buf)));
+  EXPECT(std::strcmp(buf, "45s") == 0);
+  EXPECT(formatUptime(9209, buf, sizeof(buf)));
+  EXPECT(std::strcmp(buf, "2h33m") == 0);
+  EXPECT(formatUptime(90000, buf, sizeof(buf)));
+  EXPECT(std::strcmp(buf, "1d1h") == 0);
 }
 
 /* ---------- Framework discover versions ---------- */
@@ -193,41 +231,67 @@ static bool cap(const char* t, void*) {
   return true;
 }
 
+static uint32_t fakeUp(void*) { return 9209; }
+static int fakeRssi(void*) { return -91; }
+
 static void test_framework_discover_versions() {
   McRpc rpc;
   class F : public Feature {
   public:
     const char* name() const override { return "f"; }
     void registerCommands(CommandRegistry& c) override { c.registerCommand("ping", hPing); }
+    void registerCapabilities(CapabilityRegistry& caps) override {
+      caps.registerCapability("button");
+    }
   } f;
   rpc.features().add(&f);
   rpc.setPublishHandler(cap, nullptr);
   rpc.setNodeIdentity("tracker", "mych");
-  rpc.setProfile("tracker");
-  rpc.setFirmwareVersion("fw");
+  rpc.setNodeId("3CBBF74E1FEEF235A68BAE7E2DBDECB803E046C9C2F6C2AEE710380222AD60FC");
+  rpc.setTag("ha");
+  rpc.setFirmwareVersion("2.11.0");
+  rpc.setIdentityCallbacks(fakeUp, fakeRssi, nullptr);
   rpc.begin();
   DiscoverBuilder d;
   rpc.buildDiscover(d);
   ReplyBuffer r;
   d.writeTo(r);
-  EXPECT(std::strstr(r.data, "protocol=1.1") != nullptr);
-  EXPECT(std::strstr(r.data, "sdk=1.1.0") != nullptr);
+  EXPECT(std::strstr(r.data, "id=3cbbf74e") != nullptr);
+  EXPECT(std::strstr(r.data, "v=1.2") != nullptr);
+  EXPECT(std::strstr(r.data, "fw=2.11.0") != nullptr);
+  EXPECT(std::strstr(r.data, "tag=ha") != nullptr);
+  EXPECT(std::strstr(r.data, "up=2h33m") != nullptr);
+  EXPECT(std::strstr(r.data, "caps=button") != nullptr);
+  EXPECT(std::strstr(r.data, "protocol=") == nullptr);
+  EXPECT(std::strstr(r.data, "sdk=") == nullptr);
+  EXPECT(std::strstr(r.data, "features=") == nullptr);
+  EXPECT(std::strstr(r.data, "profile=") == nullptr);
+
+  StatusBuilder st;
+  rpc.buildStatus(st);
+  st.writeTo(r);
+  EXPECT(std::strstr(r.data, "id_full=3CBBF74E") != nullptr ||
+         std::strstr(r.data, "id_full=3cbbf74e") != nullptr);
+  EXPECT(std::strstr(r.data, "transport=meshcore") != nullptr);
+  EXPECT(std::strstr(r.data, "rssi=-91") != nullptr);
   rpc.shutdown();
 }
 
 int main() {
-  EXPECT(std::strcmp(protocolVersionString(), "1.1") == 0);
-  EXPECT(std::strcmp(sdkVersionString(), "1.1.0") == 0);
+  EXPECT(std::strcmp(protocolVersionString(), "1.2") == 0);
+  EXPECT(std::strcmp(sdkVersionString(), "1.2.0") == 0);
 
   test_whitespace();
   test_request_ids();
   test_addressing();
   test_malformed();
   test_case();
+  test_call_parser_neutral();
   test_dispatch_errors_broadcast();
   test_builders_and_events();
   test_command_alias_registration();
   test_response_generation();
+  test_uptime_format();
   test_framework_discover_versions();
 
   if (g_fail) {

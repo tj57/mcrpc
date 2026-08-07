@@ -2,13 +2,13 @@
 IN
 -
 OUT
-tracker profile=tracker fw=test protocol=1.1 sdk=1.1.0
+tracker id=3cbbf74e fw=test v=1.2 tag=tracker up=42s caps=battery,button
 MODE
 build_discover
 ---
 IN
 -
 OUT
-status name=tracker profile=tracker fw=test
+status name=tracker id=3cbbf74e fw=test v=1.2 tag=tracker transport=meshcore
 MODE
 build_status

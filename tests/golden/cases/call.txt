@@ -1,0 +1,28 @@
+# call is a normal command (parser-neutral); handler returns CallResult
+IN
+tracker call scene.morning
+OUT
+ok
+MODE
+dispatch
+---
+IN
+tracker#7 call button.pressed count=4
+OUT
+#7 ok lat=50 lon=19
+MODE
+dispatch
+---
+IN
+tracker call button_pressed
+OUT
+err invalid_argument reason=proc
+MODE
+dispatch
+---
+IN
+tracker call scene.nope
+OUT
+err unknown_proc
+MODE
+dispatch

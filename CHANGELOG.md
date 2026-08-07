@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 This project uses independent **protocol**, **SDK**, and **library** versions
 (see `include/mcrpc/Version.h`).
 
+## [1.2.0] — 2026-08-07
+
+RFC-0002 (protocol **1.2**): slim discovery, rich status, namespaced `call`.
+
+### Protocol
+
+- Discovery emits `id` (8 hex), `fw`, `v=1.2`, optional `tag` / `up` / `caps` only
+- Dropped from discovery emitters: `protocol*`, `sdk`, `features=`, `transport=`, `profile=`, full-length id
+- Status carries `id_full`, `transport`, radio/power/heap contributions
+- Human `up=` uptime (`2h33m`); unknown discover/status fields MUST be ignored
+- Core command `call ns.action` (parser-neutral); results `ok`/`err`/`busy`/`retry` + `key=value` only
+- Events: dotted names (`button.pressed`, `battery.low`)
+
+### SDK / Library
+
+- SDK **1.2.0**, library **1.2.0**
+- `CallResult`, `UptimeFormat` / `shortId8`
+- `HostServices::handleCall`, `readSnr`, `readHeapFree`
+
 ## [1.1.0] — 2026-08-06
 
 RFC-0001 GA (protocol **1.1**). Architecture frozen at rev 03.

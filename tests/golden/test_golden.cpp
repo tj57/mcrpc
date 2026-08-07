@@ -159,10 +159,12 @@ static void runCase(const char* file, const Case& c, Dispatcher& disp) {
   if (c.mode == "build_discover") {
     DiscoverBuilder d;
     d.setNodeName("tracker");
-    d.add("profile", "tracker");
+    d.add("id", "3cbbf74e");
     d.add("fw", "test");
-    d.add("protocol", protocolVersionString());
-    d.add("sdk", sdkVersionString());
+    d.add("v", protocolVersionString());
+    d.add("tag", "tracker");
+    d.add("up", "42s");
+    d.add("caps", "battery,button");
     d.writeTo(buf);
     check(file, c, buf.data, true);
     return;
@@ -170,8 +172,11 @@ static void runCase(const char* file, const Case& c, Dispatcher& disp) {
   if (c.mode == "build_status") {
     StatusBuilder s;
     s.add("name", "tracker");
-    s.add("profile", "tracker");
+    s.add("id", "3cbbf74e");
     s.add("fw", "test");
+    s.add("v", protocolVersionString());
+    s.add("tag", "tracker");
+    s.add("transport", "meshcore");
     s.writeTo(buf);
     check(file, c, buf.data, true);
     return;
@@ -180,9 +185,35 @@ static void runCase(const char* file, const Case& c, Dispatcher& disp) {
   g_fail++;
 }
 
+static bool hCall(CommandContext& ctx) {
+  if (ctx.request->argc < 1) {
+    CallResult::err(*ctx.reply, "invalid_argument");
+    return true;
+  }
+  const char* proc = ctx.request->args[0];
+  if (!CallResult::isValidProc(proc)) {
+    CallResult::err(*ctx.reply, "invalid_argument");
+    CallResult::appendKv(*ctx.reply, "reason", "proc");
+    return true;
+  }
+  if (std::strcmp(proc, "scene.nope") == 0) {
+    CallResult::err(*ctx.reply, "unknown_proc");
+    return true;
+  }
+  if (std::strcmp(proc, "button.pressed") == 0) {
+    CallResult::ok(*ctx.reply);
+    CallResult::appendKv(*ctx.reply, "lat", "50");
+    CallResult::appendKv(*ctx.reply, "lon", "19");
+    return true;
+  }
+  CallResult::ok(*ctx.reply);
+  return true;
+}
+
 int main() {
   CommandRegistry reg;
   reg.registerCommand("ping", hPing);
+  reg.registerCommand("call", hCall);
   // Registered features that are unavailable on this device (SPEC §18).
   reg.registerCommand("relay", hUnsupported);
   reg.registerCommand("battery", hUnsupported);

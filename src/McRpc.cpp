@@ -1,6 +1,7 @@
 #include <mcrpc/McRpc.h>
 #include <mcrpc/Version.h>
 #include <mcrpc/CanonicalCsv.h>
+#include <mcrpc/UptimeFormat.h>
 
 #include <stdio.h>
 
@@ -41,42 +42,60 @@ bool McRpc::publishRaw(const char* text) {
 void McRpc::buildStatus(StatusBuilder& status) {
   status.reset();
   status.add("name", _node_name);
-  const char* tag = _tag[0] ? _tag : _profile;
-  if (tag[0]) status.add("profile", tag);  // legacy field for 1.0 readers
-  if (_tag[0]) status.add("tag", _tag);
+
+  char id8[9];
+  if (_node_id[0] && shortId8(_node_id, id8)) {
+    status.add("id", id8);
+    status.add("id_full", _node_id);
+  }
+
   status.add("fw", _firmware);
-  if (_uptime_fn) status.add("uptime", (unsigned long)_uptime_fn(_id_ctx));
+  status.add("v", protocolVersionString());
+
+  const char* tag = _tag[0] ? _tag : _profile;
+  if (tag[0]) status.add("tag", tag);
+
+  if (_uptime_fn) {
+    char up[16];
+    if (formatUptime(_uptime_fn(_id_ctx), up, sizeof(up))) status.add("up", up);
+  }
   if (_rssi_fn) status.add("rssi", _rssi_fn(_id_ctx));
+
+  if (_transport[0]) status.add("transport", _transport);
+
+  if (_capabilities.count() > 0) {
+    const char* cap_ptrs[MCRPC_MAX_CAPS];
+    size_t n = _capabilities.count();
+    if (n > MCRPC_MAX_CAPS) n = MCRPC_MAX_CAPS;
+    for (size_t i = 0; i < n; ++i) cap_ptrs[i] = _capabilities.at(i);
+    char caps_csv[96];
+    if (canonicalizeCsv(cap_ptrs, n, caps_csv, sizeof(caps_csv))) {
+      status.add("caps", caps_csv);
+    }
+  }
+
   _features.collectStatus(status);
 }
 
 void McRpc::buildDiscover(DiscoverBuilder& discover) {
   discover.reset();
   discover.setNodeName(_node_name);
-  if (_node_id[0]) discover.add("id", _node_id);
 
-  const char* primary_tag = _tag[0] ? _tag : _profile;
-  if (primary_tag[0]) {
-    discover.add("profile", primary_tag);  // legacy 1.0
-    if (_tag[0]) discover.add("tag", _tag);
+  // RF-critical fields first (MeshCore group text ~155 body bytes after prefix).
+  char id8[9];
+  if (_node_id[0] && shortId8(_node_id, id8)) {
+    discover.add("id", id8);
   }
 
   discover.add("fw", _firmware);
-  if (_uptime_fn) discover.add("uptime", (int)_uptime_fn(_id_ctx));
+  discover.add("v", protocolVersionString());
 
-  discover.add("protocol", protocolVersionString());
-  discover.add("protocol_min", "1.0");
-  discover.add("protocol_max", protocolVersionString());
-  discover.add("sdk", sdkVersionString());
+  const char* primary_tag = _tag[0] ? _tag : _profile;
+  if (primary_tag[0]) discover.add("tag", primary_tag);
 
-  const char* feature_tokens[] = {
-      "caps-in-discovery",
-      "id-addr",
-      "request-id",
-  };
-  char features_csv[96];
-  if (canonicalizeCsv(feature_tokens, 3, features_csv, sizeof(features_csv))) {
-    discover.add("features", features_csv);
+  if (_uptime_fn) {
+    char up[16];
+    if (formatUptime(_uptime_fn(_id_ctx), up, sizeof(up))) discover.add("up", up);
   }
 
   if (_capabilities.count() > 0) {
@@ -84,12 +103,13 @@ void McRpc::buildDiscover(DiscoverBuilder& discover) {
     size_t n = _capabilities.count();
     if (n > MCRPC_MAX_CAPS) n = MCRPC_MAX_CAPS;
     for (size_t i = 0; i < n; ++i) cap_ptrs[i] = _capabilities.at(i);
-    char caps_csv[160];
+    char caps_csv[96];
     if (canonicalizeCsv(cap_ptrs, n, caps_csv, sizeof(caps_csv))) {
       discover.add("caps", caps_csv);
     }
   }
 
+  // Features SHOULD NOT pad discovery; prefer status / caps=.
   _features.collectDiscover(discover);
 }
 
