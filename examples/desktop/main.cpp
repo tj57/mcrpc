@@ -41,7 +41,9 @@ int main() {
 
   std::printf(">> all discovery\n");
   rpc.handleIncomingText("all discovery");
-  if (!std::strstr(g_last, "protocol=")) return 1;
+  // RFC-0002 slim discovery: wire version is ``v=``, not ``protocol=``.
+  if (!std::strstr(g_last, "v=1.2")) return 1;
+  if (std::strstr(g_last, "protocol=")) return 1;
 
   rpc.shutdown();
   return 0;

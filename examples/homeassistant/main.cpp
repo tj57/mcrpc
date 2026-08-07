@@ -31,11 +31,11 @@ int main() {
   OutboundBuilder::request(out, "tracker", "gps", true, 42);
   std::printf("OUT %s\n", out.data);
 
-  handleInbound("tracker: event button_pressed count=1");
+  handleInbound("tracker: event button.pressed count=1");
   handleInbound("tracker: #42 gps lat=1.0 lon=2.0");
   // Discover-style lines are data for HA (key=value), not commands
-  const char* disc = "tracker profile=tracker fw=1 protocol=1.0 sdk=1.0.0";
-  if (std::strstr(disc, "profile="))
+  const char* disc = "tracker id=aabbccdd fw=1 v=1.2 tag=tracker up=42s";
+  if (std::strstr(disc, "v="))
     std::printf("HA_DISCOVER %s\n", disc);
   else
     handleInbound(disc);
